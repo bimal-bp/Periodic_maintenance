@@ -3,413 +3,508 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tipper Service Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <title>Tipper Service Tracker</title>
     <style>
-        .alert-card {
-            border-left: 5px solid;
-            margin-bottom: 15px;
-            transition: all 0.3s;
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
-        .alert-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .alert-critical {
-            border-left-color: #dc3545;
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
         }
         .alert-warning {
-            border-left-color: #ffc107;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
         }
-        .tipper-card {
+        .alert-danger {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 16px;
         }
-        .tipper-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        button:hover {
+            background-color: #45a049;
         }
-        .tipper-active {
-            border: 2px solid #0d6efd;
-            background-color: #f0f7ff;
+        .notification-badge {
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 5px;
         }
-        .update-form {
-            background-color: #f8f9fa;
-            border-radius: 10px;
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            color: black;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
             padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
         }
-        .progress-thin {
-            height: 8px;
+        .visible {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            table {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    <i class="bi bi-truck"></i> Tipper Service Management
-                </a>
-                <div class="d-flex">
-                    <span class="navbar-text text-white me-3">
-                        <i class="bi bi-calendar-check"></i> Today: <span id="currentDate"></span>
-                    </span>
-                </div>
+    <div class="container">
+        <h1>Tipper Service Tracker</h1>
+        
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'dashboard')">Dashboard</button>
+            <button class="tablinks" onclick="openTab(event, 'update')">Update Readings</button>
+            <button class="tablinks" onclick="openTab(event, 'history')">Service History</button>
+            <button class="tablinks" onclick="openTab(event, 'settings')">Settings</button>
+        </div>
+        
+        <div id="dashboard" class="tabcontent visible">
+            <h2>Service Alerts <span id="alert-count" class="notification-badge" style="display: none;">0</span></h2>
+            <div id="alerts-container"></div>
+            
+            <h2>Current Status</h2>
+            <table id="status-table">
+                <thead>
+                    <tr>
+                        <th>Tipper No.</th>
+                        <th>Current HMR</th>
+                        <th>Current KMR</th>
+                        <th>Last Service Date</th>
+                        <th>Last Service HMR</th>
+                        <th>Last Service KMR</th>
+                        <th>Next Service Due</th>
+                    </tr>
+                </thead>
+                <tbody id="status-body">
+                    <!-- Filled by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="update" class="tabcontent">
+            <h2>Update Tipper Readings</h2>
+            <div class="form-group">
+                <label for="tipper-select">Select Tipper:</label>
+                <select id="tipper-select">
+                    <option value="0926">0926</option>
+                    <option value="0927">0927</option>
+                    <option value="0928">0928</option>
+                    <option value="4651">4651</option>
+                    <option value="4652">4652</option>
+                </select>
             </div>
-        </nav>
-
-        <div class="row">
-            <!-- Alerts Column -->
-            <div class="col-md-5">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <i class="bi bi-exclamation-triangle"></i> Service Alerts
-                    </div>
-                    <div class="card-body">
-                        <div class="alert-card card alert-critical">
-                            <div class="card-body">
-                                <h5 class="card-title">Tipper #T-102 - Overdue Service</h5>
-                                <p class="card-text">
-                                    <i class="bi bi-speedometer2"></i> Current HMR: 1,532 hrs<br>
-                                    <i class="bi bi-wrench"></i> 500hr service was due at 1,500 hrs (32 hrs overdue)
-                                </p>
-                                <button class="btn btn-sm btn-outline-danger">Update Now</button>
-                            </div>
-                        </div>
-                        
-                        <div class="alert-card card alert-critical">
-                            <div class="card-body">
-                                <h5 class="card-title">Tipper #T-107 - Overdue Service</h5>
-                                <p class="card-text">
-                                    <i class="bi bi-speedometer2"></i> Current HMR: 2,015 hrs<br>
-                                    <i class="bi bi-wrench"></i> 1000hr service was due at 2,000 hrs (15 hrs overdue)
-                                </p>
-                                <button class="btn btn-sm btn-outline-danger">Update Now</button>
-                            </div>
-                        </div>
-                        
-                        <div class="alert-card card alert-warning">
-                            <div class="card-body">
-                                <h5 class="card-title">Tipper #T-115 - Approaching Service</h5>
-                                <p class="card-text">
-                                    <i class="bi bi-speedometer2"></i> Current HMR: 975 hrs<br>
-                                    <i class="bi bi-wrench"></i> Next 500hr service at 1,000 hrs (25 hrs remaining)
-                                </p>
-                                <div class="progress progress-thin mt-2">
-                                    <div class="progress-bar bg-warning" style="width: 97.5%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <i class="bi bi-truck"></i> Tipper List
-                    </div>
-                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                        <div class="row">
-                            <!-- Tipper Cards -->
-                            <div class="col-md-6 mb-3 tipper-card tipper-active" onclick="selectTipper('T-102')">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">#T-102</h5>
-                                        <p class="card-text">
-                                            Reg: MH-12-AB-1234<br>
-                                            HMR: 1,532 hrs<br>
-                                            <span class="badge bg-danger">Overdue</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3 tipper-card" onclick="selectTipper('T-115')">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">#T-115</h5>
-                                        <p class="card-text">
-                                            Reg: MH-12-CD-5678<br>
-                                            HMR: 975 hrs<br>
-                                            <span class="badge bg-warning">Due Soon</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3 tipper-card" onclick="selectTipper('T-121')">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">#T-121</h5>
-                                        <p class="card-text">
-                                            Reg: MH-12-EF-9012<br>
-                                            HMR: 450 hrs<br>
-                                            <span class="badge bg-success">OK</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3 tipper-card" onclick="selectTipper('T-107')">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">#T-107</h5>
-                                        <p class="card-text">
-                                            Reg: MH-12-GH-3456<br>
-                                            HMR: 2,015 hrs<br>
-                                            <span class="badge bg-danger">Overdue</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="current-hmr">Current HMR:</label>
+                <input type="number" id="current-hmr" placeholder="Enter current hour meter reading">
             </div>
-
-            <!-- Selected Tipper Update Column -->
-            <div class="col-md-7">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-speedometer2"></i> Update Tipper Readings</span>
-                        <span id="selectedTipperBadge" class="badge bg-secondary">None selected</span>
-                    </div>
-                    <div class="card-body">
-                        <div id="noTipperSelected" class="text-center py-5">
-                            <i class="bi bi-truck" style="font-size: 3rem; color: #6c757d;"></i>
-                            <h4 class="mt-3">Select a tipper to update readings</h4>
-                            <p class="text-muted">Click on a tipper from the list to begin</p>
-                        </div>
-                        
-                        <div id="tipperUpdateForm" class="update-form" style="display: none;">
-                            <h4 id="tipperUpdateTitle" class="mb-4"></h4>
-                            
-                            <form id="readingUpdateForm">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Current HMR (Hours)</label>
-                                        <input type="number" class="form-control" id="currentHmr" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Current KMR (Kilometers)</label>
-                                        <input type="number" class="form-control" id="currentKmr" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Date of Reading</label>
-                                        <input type="date" class="form-control" id="readingDate" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Recorded By</label>
-                                        <input type="text" class="form-control" id="recordedBy" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">Notes</label>
-                                    <textarea class="form-control" id="readingNotes" rows="2"></textarea>
-                                </div>
-                                
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-save"></i> Update Readings
-                                    </button>
-                                </div>
-                            </form>
-                            
-                            <hr class="my-4">
-                            
-                            <h5 class="mb-3">Service Status</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card mb-3">
-                                        <div class="card-body">
-                                            <h6 class="card-title">500hr Service</h6>
-                                            <p class="card-text">
-                                                Last: 1,000 hrs<br>
-                                                Next due: <span class="fw-bold">1,500 hrs</span><br>
-                                                Status: <span id="status500" class="badge bg-danger">Overdue</span>
-                                            </p>
-                                            <div class="progress progress-thin">
-                                                <div id="progress500" class="progress-bar bg-danger" style="width: 100%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h6 class="card-title">1000hr Service</h6>
-                                            <p class="card-text">
-                                                Last: 1,000 hrs<br>
-                                                Next due: <span class="fw-bold">2,000 hrs</span><br>
-                                                Status: <span id="status1000" class="badge bg-success">OK</span>
-                                            </p>
-                                            <div class="progress progress-thin">
-                                                <div id="progress1000" class="progress-bar bg-success" style="width: 25%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <i class="bi bi-envelope"></i> Email Notification Settings
-                    </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="mb-3">
-                                <label class="form-label">Notification Email Addresses</label>
-                                <input type="text" class="form-control" value="service@company.com, manager@company.com">
-                                <div class="form-text">Separate multiple emails with commas</div>
-                            </div>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">500hr Service Alert</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" value="50">
-                                        <span class="input-group-text">hours before</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">1000hr Service Alert</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" value="100">
-                                        <span class="input-group-text">hours before</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="emailAlerts" checked>
-                                <label class="form-check-label" for="emailAlerts">Enable email notifications</label>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Save Settings</button>
-                        </form>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="current-kmr">Current KMR:</label>
+                <input type="number" id="current-kmr" placeholder="Enter current kilometer reading">
             </div>
+            <div class="form-group">
+                <label for="update-date">Date:</label>
+                <input type="date" id="update-date" value="">
+            </div>
+            <button onclick="updateReadings()">Update Readings</button>
+        </div>
+        
+        <div id="history" class="tabcontent">
+            <h2>Service History</h2>
+            <div class="form-group">
+                <label for="history-tipper-select">Select Tipper:</label>
+                <select id="history-tipper-select" onchange="loadServiceHistory()">
+                    <option value="all">All Tippers</option>
+                    <option value="0926">0926</option>
+                    <option value="0927">0927</option>
+                    <option value="0928">0928</option>
+                    <option value="4651">4651</option>
+                    <option value="4652">4652</option>
+                </select>
+            </div>
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Tipper No.</th>
+                        <th>Service Type</th>
+                        <th>HMR</th>
+                        <th>KMR</th>
+                        <th>Parts Serviced</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <!-- Filled by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="settings" class="tabcontent">
+            <h2>Service Settings</h2>
+            <div class="form-group">
+                <label for="service-interval-hmr">Service Interval (HMR):</label>
+                <input type="number" id="service-interval-hmr" value="1000">
+            </div>
+            <div class="form-group">
+                <label for="service-interval-kmr">Service Interval (KMR):</label>
+                <input type="number" id="service-interval-kmr" value="10000">
+            </div>
+            <div class="form-group">
+                <label for="alert-threshold">Alert Threshold (% before due):</label>
+                <input type="number" id="alert-threshold" value="10" min="1" max="100">
+            </div>
+            <div class="form-group">
+                <label for="notification-frequency">Notification Frequency:</label>
+                <select id="notification-frequency">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            <button onclick="saveSettings()">Save Settings</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric'
+        // Initialize data
+        let tippers = {
+            "0926": { currentHmr: 873, currentKmr: 45637, lastServiceDate: "2025-06-17", lastServiceHmr: 873, lastServiceKmr: 45637 },
+            "0927": { currentHmr: 1200, currentKmr: 55000, lastServiceDate: "2025-05-15", lastServiceHmr: 1000, lastServiceKmr: 50000 },
+            "0928": { currentHmr: 950, currentKmr: 48000, lastServiceDate: "2025-06-10", lastServiceHmr: 800, lastServiceKmr: 40000 },
+            "4651": { currentHmr: 1500, currentKmr: 70000, lastServiceDate: "2025-04-20", lastServiceHmr: 1000, lastServiceKmr: 60000 },
+            "4652": { currentHmr: 500, currentKmr: 30000, lastServiceDate: "2025-06-05", lastServiceHmr: 0, lastServiceKmr: 25000 }
+        };
+
+        let serviceHistory = [
+            { date: "2025-06-17", tipper: "0926", serviceType: "1000 Hrs", hmr: 873, kmr: 45637, parts: "All 1000hr parts" },
+            { date: "2025-06-10", tipper: "0928", serviceType: "1000 Hrs", hmr: 800, kmr: 40000, parts: "All 1000hr parts" },
+            { date: "2025-06-05", tipper: "4652", serviceType: "Initial", hmr: 0, kmr: 25000, parts: "All 1000hr parts" },
+            { date: "2025-05-15", tipper: "0927", serviceType: "1000 Hrs", hmr: 1000, kmr: 50000, parts: "All 1000hr parts" },
+            { date: "2025-04-20", tipper: "4651", serviceType: "1000 Hrs", hmr: 1000, kmr: 60000, parts: "All 1000hr parts" }
+        ];
+
+        let settings = {
+            serviceIntervalHmr: 1000,
+            serviceIntervalKmr: 10000,
+            alertThreshold: 10,
+            notificationFrequency: "daily"
+        };
+
+        // Parts that come under 1000 Hrs service
+        const serviceParts = [
+            "Engine Oil - Gulf",
+            "Engine Oil Filter",
+            "Fuel Filter",
+            "By Pass Filter",
+            "Racor (Fuel) Filter",
+            "Primary & Secondary Air Filter",
+            "Breather Element Filter",
+            "Return Line Filter"
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default in the update form
+            document.getElementById('update-date').valueAsDate = new Date();
+            
+            // Load settings from localStorage if available
+            loadSettings();
+            
+            // Initialize the dashboard
+            updateDashboard();
+            loadServiceHistory();
         });
-        
-        // Sample tipper data
-        const tippers = {
-            'T-102': {
-                reg: 'MH-12-AB-1234',
-                currentHmr: 1532,
-                currentKmr: 24500,
-                lastService500: 1000,
-                lastService1000: 1000,
-                status500: 'Overdue',
-                status1000: 'OK',
-                progress500: 100,
-                progress1000: 25,
-                progress500Color: 'danger',
-                progress1000Color: 'success'
-            },
-            'T-115': {
-                reg: 'MH-12-CD-5678',
-                currentHmr: 975,
-                currentKmr: 18500,
-                lastService500: 500,
-                lastService1000: 0,
-                status500: 'Due Soon',
-                status1000: 'OK',
-                progress500: 95,
-                progress1000: 0,
-                progress500Color: 'warning',
-                progress1000Color: 'success'
-            },
-            'T-121': {
-                reg: 'MH-12-EF-9012',
-                currentHmr: 450,
-                currentKmr: 12500,
-                lastService500: 0,
-                lastService1000: 0,
-                status500: 'OK',
-                status1000: 'OK',
-                progress500: 0,
-                progress1000: 0,
-                progress500Color: 'success',
-                progress1000Color: 'success'
-            },
-            'T-107': {
-                reg: 'MH-12-GH-3456',
-                currentHmr: 2015,
-                currentKmr: 32500,
-                lastService500: 1500,
-                lastService1000: 1000,
-                status500: 'OK',
-                status1000: 'Overdue',
-                progress500: 0,
-                progress1000: 100,
-                progress500Color: 'success',
-                progress1000Color: 'danger'
+
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("visible");
             }
-        };
-        
-        // Select tipper function
-        function selectTipper(tipperId) {
-            // Update UI
-            document.querySelectorAll('.tipper-card').forEach(card => {
-                card.classList.remove('tipper-active');
-            });
-            event.currentTarget.classList.add('tipper-active');
             
-            document.getElementById('selectedTipperBadge').textContent = tipperId;
-            document.getElementById('selectedTipperBadge').className = 'badge bg-primary';
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
             
-            document.getElementById('noTipperSelected').style.display = 'none';
-            document.getElementById('tipperUpdateForm').style.display = 'block';
-            
-            // Update form with tipper data
-            const tipper = tippers[tipperId];
-            document.getElementById('tipperUpdateTitle').textContent = `Tipper #${tipperId} (${tipper.reg})`;
-            document.getElementById('currentHmr').value = tipper.currentHmr;
-            document.getElementById('currentKmr').value = tipper.currentKmr;
-            document.getElementById('readingDate').valueAsDate = new Date();
-            
-            // Update service status
-            document.getElementById('status500').textContent = tipper.status500;
-            document.getElementById('status500').className = `badge bg-${tipper.progress500Color}`;
-            document.getElementById('progress500').style.width = `${tipper.progress500}%`;
-            document.getElementById('progress500').className = `progress-bar bg-${tipper.progress500Color}`;
-            
-            document.getElementById('status1000').textContent = tipper.status1000;
-            document.getElementById('status1000').className = `badge bg-${tipper.progress1000Color}`;
-            document.getElementById('progress1000').style.width = `${tipper.progress1000}%`;
-            document.getElementById('progress1000').className = `progress-bar bg-${tipper.progress1000Color}`;
+            document.getElementById(tabName).classList.add("visible");
+            evt.currentTarget.className += " active";
         }
-        
-        // Form submission
-        document.getElementById('readingUpdateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Readings updated successfully!');
-            // In a real app, you would send this data to your backend
-        });
-        
-        // Initialize with first tipper selected
-        window.onload = function() {
-            selectTipper('T-102');
-        };
+
+        function updateDashboard() {
+            const statusBody = document.getElementById('status-body');
+            statusBody.innerHTML = '';
+            
+            let alertCount = 0;
+            const alertsContainer = document.getElementById('alerts-container');
+            alertsContainer.innerHTML = '';
+            
+            for (const tipper in tippers) {
+                const data = tippers[tipper];
+                const nextServiceHmr = data.lastServiceHmr + settings.serviceIntervalHmr;
+                const nextServiceKmr = data.lastServiceKmr + settings.serviceIntervalKmr;
+                
+                const hmrRemaining = nextServiceHmr - data.currentHmr;
+                const kmrRemaining = nextServiceKmr - data.currentKmr;
+                
+                const hmrPercent = (data.currentHmr - data.lastServiceHmr) / settings.serviceIntervalHmr * 100;
+                const kmrPercent = (data.currentKmr - data.lastServiceKmr) / settings.serviceIntervalKmr * 100;
+                
+                // Determine which service comes first (HMR or KMR)
+                const nextServiceDue = Math.min(hmrRemaining, kmrRemaining);
+                const nextServiceType = hmrRemaining < kmrRemaining ? "HMR" : "KMR";
+                
+                // Check if service is due or approaching
+                const thresholdHmr = settings.serviceIntervalHmr * (settings.alertThreshold / 100);
+                const thresholdKmr = settings.serviceIntervalKmr * (settings.alertThreshold / 100);
+                
+                if (data.currentHmr >= nextServiceHmr || data.currentKmr >= nextServiceKmr) {
+                    // Service overdue
+                    alertsContainer.innerHTML += `
+                        <div class="alert alert-danger">
+                            <strong>${tipper}:</strong> Service is overdue! ${nextServiceType} exceeded by 
+                            ${Math.abs(nextServiceDue)} (HMR: ${data.currentHmr}/${nextServiceHmr}, KMR: ${data.currentKmr}/${nextServiceKmr})
+                        </div>
+                    `;
+                    alertCount++;
+                } else if ((hmrRemaining <= thresholdHmr) || (kmrRemaining <= thresholdKmr)) {
+                    // Service approaching
+                    alertsContainer.innerHTML += `
+                        <div class="alert alert-warning">
+                            <strong>${tipper}:</strong> Service due soon (${nextServiceType} in ${nextServiceDue}). 
+                            HMR: ${Math.round(hmrPercent)}%, KMR: ${Math.round(kmrPercent)}%
+                        </div>
+                    `;
+                    alertCount++;
+                }
+                
+                // Add to status table
+                statusBody.innerHTML += `
+                    <tr>
+                        <td>${tipper}</td>
+                        <td>${data.currentHmr}</td>
+                        <td>${data.currentKmr}</td>
+                        <td>${formatDate(data.lastServiceDate)}</td>
+                        <td>${data.lastServiceHmr}</td>
+                        <td>${data.lastServiceKmr}</td>
+                        <td>${nextServiceDue} (${nextServiceType})</td>
+                    </tr>
+                `;
+            }
+            
+            // Update alert badge
+            const alertBadge = document.getElementById('alert-count');
+            if (alertCount > 0) {
+                alertBadge.textContent = alertCount;
+                alertBadge.style.display = 'inline';
+            } else {
+                alertBadge.style.display = 'none';
+            }
+        }
+
+        function updateReadings() {
+            const tipper = document.getElementById('tipper-select').value;
+            const hmr = parseInt(document.getElementById('current-hmr').value);
+            const kmr = parseInt(document.getElementById('current-kmr').value);
+            const date = document.getElementById('update-date').value;
+            
+            if (isNaN(hmr) || isNaN(kmr)) {
+                alert("Please enter valid HMR and KMR values");
+                return;
+            }
+            
+            // Update current readings
+            tippers[tipper].currentHmr = hmr;
+            tippers[tipper].currentKmr = kmr;
+            
+            // Check if this is a service update (if readings are reset or significantly lower)
+            const lastHmr = tippers[tipper].lastServiceHmr;
+            const lastKmr = tippers[tipper].lastServiceKmr;
+            
+            if (hmr < lastHmr || kmr < lastKmr) {
+                // This is a service record
+                tippers[tipper].lastServiceDate = date;
+                tippers[tipper].lastServiceHmr = hmr;
+                tippers[tipper].lastServiceKmr = kmr;
+                
+                // Add to service history
+                serviceHistory.unshift({
+                    date: date,
+                    tipper: tipper,
+                    serviceType: "1000 Hrs",
+                    hmr: hmr,
+                    kmr: kmr,
+                    parts: serviceParts.join(", ")
+                });
+            }
+            
+            // Update the dashboard
+            updateDashboard();
+            loadServiceHistory();
+            
+            // Clear the form
+            document.getElementById('current-hmr').value = '';
+            document.getElementById('current-kmr').value = '';
+            
+            alert("Readings updated successfully!");
+        }
+
+        function loadServiceHistory() {
+            const tipper = document.getElementById('history-tipper-select').value;
+            const historyBody = document.getElementById('history-body');
+            historyBody.innerHTML = '';
+            
+            let filteredHistory = serviceHistory;
+            if (tipper !== 'all') {
+                filteredHistory = serviceHistory.filter(record => record.tipper === tipper);
+            }
+            
+            filteredHistory.forEach(record => {
+                historyBody.innerHTML += `
+                    <tr>
+                        <td>${formatDate(record.date)}</td>
+                        <td>${record.tipper}</td>
+                        <td>${record.serviceType}</td>
+                        <td>${record.hmr}</td>
+                        <td>${record.kmr}</td>
+                        <td>${record.parts}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('tipperServiceSettings');
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                
+                document.getElementById('service-interval-hmr').value = settings.serviceIntervalHmr;
+                document.getElementById('service-interval-kmr').value = settings.serviceIntervalKmr;
+                document.getElementById('alert-threshold').value = settings.alertThreshold;
+                document.getElementById('notification-frequency').value = settings.notificationFrequency;
+            }
+        }
+
+        function saveSettings() {
+            settings.serviceIntervalHmr = parseInt(document.getElementById('service-interval-hmr').value);
+            settings.serviceIntervalKmr = parseInt(document.getElementById('service-interval-kmr').value);
+            settings.alertThreshold = parseInt(document.getElementById('alert-threshold').value);
+            settings.notificationFrequency = document.getElementById('notification-frequency').value;
+            
+            localStorage.setItem('tipperServiceSettings', JSON.stringify(settings));
+            alert("Settings saved successfully!");
+            
+            // Update dashboard with new settings
+            updateDashboard();
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Check for notifications periodically based on settings
+        function checkNotifications() {
+            // In a real app, this would check for notifications and show them
+            console.log("Checking for notifications...");
+            
+            // For demo purposes, we'll just update the dashboard
+            updateDashboard();
+        }
+
+        // Set up periodic notification checking based on settings
+        setInterval(checkNotifications, getNotificationInterval());
+
+        function getNotificationInterval() {
+            switch(settings.notificationFrequency) {
+                case 'weekly': return 7 * 24 * 60 * 60 * 1000; // 1 week
+                case 'monthly': return 30 * 24 * 60 * 60 * 1000; // ~1 month
+                default: return 24 * 60 * 60 * 1000; // Default daily
+            }
+        }
     </script>
 </body>
 </html>
