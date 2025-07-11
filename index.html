@@ -3,687 +3,601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tipper Maintenance System</title>
+    <title>Ashok Leyland Tipper Maintenance Tracker</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f5f5f5;
             color: #333;
         }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .tipper-box {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 3px solid transparent;
-            transition: transform 0.2s;
-        }
-        .tipper-box:hover {
-            transform: translateY(-5px);
-        }
-        .tipper-box.warning {
-            border-color: #FFC107;
-            background-color: #FFF8E1;
-        }
-        .tipper-box.alert {
-            border-color: #F44336;
-            background-color: #FFEBEE;
-        }
-        .tipper-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0d47a1;
-            margin-bottom: 10px;
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .tipper-data {
-            margin: 8px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        .data-label {
-            font-weight: bold;
-            color: #555;
-        }
-        .data-value {
-            color: #222;
-        }
-        .maintenance-status {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-        }
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 1px solid #999;
-            cursor: help;
-        }
-        .status-dot.completed {
-            background-color: #4CAF50;
-            border-color: #4CAF50;
-        }
-        .status-dot.due {
-            background-color: #FFC107;
-            border-color: #FFC107;
-        }
-        .status-dot.overdue {
-            background-color: #F44336;
-            border-color: #F44336;
-        }
-        .update-form {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
-        .update-input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .update-btn {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            background-color: #4CAF50;
+        
+        header {
+            background-color: var(--primary);
             color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .update-btn:hover {
-            background-color: #3d8b40;
-        }
-        .maintenance-btn {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .maintenance-btn:hover {
-            background-color: #0d8aee;
-        }
-        h1 {
+            padding: 20px 0;
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #2196F3;
-        }
-        .alert-bar {
-            background-color: #FFEBEE;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: bold;
-            color: #D32F2F;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .normal-status {
-            background-color: #E8F5E9;
-            color: #2E7D32;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .service-parts {
-            margin-top: 15px;
-            border-top: 1px dashed #ccc;
-            padding-top: 10px;
+        
+        .tipper-view {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
         }
-        .parts-title {
+        
+        .tipper-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .tipper-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid #ddd;
+        }
+        
+        .tipper-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .tipper-item.active {
+            background-color: #e3f2fd;
+            border-left-color: var(--primary);
+        }
+        
+        .tipper-item.overdue {
+            border-left-color: var(--secondary);
+        }
+        
+        .tipper-item.due-soon {
+            border-left-color: var(--warning);
+        }
+        
+        .reg-number {
             font-weight: bold;
-            margin-bottom: 5px;
-            color: #0d47a1;
+            font-size: 16px;
         }
-        .parts-list {
-            font-size: 13px;
-            margin-left: 15px;
-            color: #555;
+        
+        .current-hmr {
+            font-size: 14px;
+            color: #666;
         }
-        .parts-list li {
-            margin-bottom: 3px;
+        
+        .tipper-details {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+        
+        .tipper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
+        
+        .tipper-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: var(--secondary);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning);
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+        }
+        
+        .current-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .service-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .service-content {
+            min-height: 300px;
+        }
+        
+        .service-section {
+            margin-bottom: 30px;
+        }
+        
+        .service-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .service-title .badge {
+            margin-left: 10px;
+        }
+        
+        .service-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .service-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .service-item.done {
+            border-left-color: var(--success);
+            background-color: #e8f5e9;
+        }
+        
+        .service-item input {
+            margin-right: 10px;
+        }
+        
+        .service-history {
+            margin-top: 30px;
+        }
+        
+        .history-item {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .history-items {
+            font-size: 14px;
+            columns: 2;
+            column-gap: 20px;
+        }
+        
+        .update-form {
+            background: #f5f5f5;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            width: 80%;
-            max-width: 600px;
+            margin-top: 30px;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-weight: 500;
         }
-        .close:hover {
-            color: black;
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
         }
-        .service-type {
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
+        
+        .btn-secondary {
+            background-color: #ddd;
+            color: #333;
         }
-        .service-type h3 {
-            margin-top: 0;
-            color: #0d47a1;
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
         }
-        .service-checklist {
-            margin-left: 20px;
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            background-color: var(--dark);
+            color: white;
         }
-        .checklist-item {
-            margin-bottom: 8px;
-        }
-        .checklist-item input {
-            margin-right: 8px;
+        
+        @media (max-width: 768px) {
+            .tipper-view {
+                grid-template-columns: 1fr;
+            }
+            
+            .current-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .history-items {
+                columns: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Tipper Maintenance System</h1>
-    <div class="alert-bar" id="alertBar">All tippers operating normally</div>
-    <div class="container" id="tipperContainer">
-        <!-- Tipper boxes will be added by JavaScript -->
-    </div>
-
-    <!-- Maintenance Modal -->
-    <div id="maintenanceModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modalTitle">Record Maintenance</h2>
-            <div id="modalContent">
-                <!-- Content will be filled by JavaScript -->
+    <header>
+        <h1>Ashok Leyland Tipper Maintenance Tracker</h1>
+        <p>Complete service history for each tipper</p>
+    </header>
+    
+    <div class="container">
+        <div class="tipper-view">
+            <div class="tipper-list">
+                <h3>Tipper Fleet</h3>
+                <div class="tipper-item overdue active" onclick="showTipper('AP39UQ0094')">
+                    <div class="reg-number">AP39UQ0094</div>
+                    <div class="current-hmr">HMR: 6,100 | KMR: 45,200</div>
+                    <small class="alert-danger">OVERDUE (100H)</small>
+                </div>
+                <div class="tipper-item overdue" onclick="showTipper('AP39WF0258')">
+                    <div class="reg-number">AP39WF0258</div>
+                    <div class="current-hmr">HMR: 7,200 | KMR: 52,000</div>
+                    <small class="alert-danger">OVERDUE (200H)</small>
+                </div>
+                <div class="tipper-item due-soon" onclick="showTipper('AP39UQ0095')">
+                    <div class="reg-number">AP39UQ0095</div>
+                    <div class="current-hmr">HMR: 5,850 | KMR: 42,000</div>
+                    <small class="alert-warning">Due in 150H</small>
+                </div>
+                <div class="tipper-item" onclick="showTipper('AP39UQ4651')">
+                    <div class="reg-number">AP39UQ4651</div>
+                    <div class="current-hmr">HMR: 3,800 | KMR: 28,000</div>
+                    <small class="alert-success">On Track</small>
+                </div>
+                <div class="tipper-item" onclick="showTipper('AP39UQ4652')">
+                    <div class="reg-number">AP39UQ4652</div>
+                    <div class="current-hmr">HMR: 4,950 | KMR: 36,000</div>
+                    <small class="alert-warning">Due in 50H</small>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <h4>Add New Tipper</h4>
+                    <form id="addTipperForm" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <input type="text" placeholder="Registration No." required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" placeholder="Current HMR" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" placeholder="Current KMR" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Tipper</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="tipper-details">
+                <div class="tipper-header">
+                    <div class="tipper-title">AP39UQ0094</div>
+                    <div class="status-badge badge-danger">OVERDUE (100H)</div>
+                </div>
+                
+                <div class="current-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">6,100</div>
+                        <div class="stat-label">Current HMR</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">45,200</div>
+                        <div class="stat-label">Current KMR</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">5,000</div>
+                        <div class="stat-label">Last Service HMR</div>
+                    </div>
+                </div>
+                
+                <div class="service-tabs">
+                    <div class="tab active" onclick="showServiceTab('current')">Current Service</div>
+                    <div class="tab" onclick="showServiceTab('history')">Service History</div>
+                    <div class="tab" onclick="showServiceTab('update')">Update</div>
+                </div>
+                
+                <div class="service-content">
+                    <!-- Current Service Tab -->
+                    <div id="current-service" class="service-tab">
+                        <div class="service-section">
+                            <div class="service-title">
+                                1000H Service <span class="badge badge-danger">OVERDUE</span>
+                            </div>
+                            <p>Next service was due at 6,000 HMR (100 hours overdue)</p>
+                            
+                            <div class="service-items">
+                                <div class="service-item">
+                                    <input type="checkbox" id="engine-oil">
+                                    <label for="engine-oil">Engine Oil</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="oil-filter">
+                                    <label for="oil-filter">Engine Oil Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="fuel-filter">
+                                    <label for="fuel-filter">Fuel Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="air-filter">
+                                    <label for="air-filter">Engine Air Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="bypass-filter">
+                                    <label for="bypass-filter">By-Pass Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="return-filter">
+                                    <label for="return-filter">Return Line Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="breather-filter">
+                                    <label for="breather-filter">Breather Element Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="second-air-filter">
+                                    <label for="second-air-filter">2nd Air Filter</label>
+                                </div>
+                                <div class="service-item">
+                                    <input type="checkbox" id="hydraulic-oil">
+                                    <label for="hydraulic-oil">Hydraulic Oil</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions" style="margin-top: 20px;">
+                                <button class="btn btn-secondary">Save Progress</button>
+                                <button class="btn btn-success">Mark Service Complete</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Service History Tab -->
+                    <div id="history-service" class="service-tab" style="display: none;">
+                        <div class="service-history">
+                            <h3>Past Services</h3>
+                            
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <span>2000H Service</span>
+                                    <span>Completed at 4,000 HMR on 15/05/2023</span>
+                                </div>
+                                <div class="history-items">
+                                    <div>✓ Rear Axle Oil</div>
+                                    <div>✓ Front Axle Oil</div>
+                                    <div>✓ Air Compressor Overhaul</div>
+                                    <div>✓ Engine Oil (Additional)</div>
+                                    <div>✓ Fuel Filter (Additional)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <span>1000H Service</span>
+                                    <span>Completed at 3,000 HMR on 10/03/2023</span>
+                                </div>
+                                <div class="history-items">
+                                    <div>✓ Engine Oil</div>
+                                    <div>✓ Engine Oil Filter</div>
+                                    <div>✓ Fuel Filter</div>
+                                    <div>✓ Engine Air Filter</div>
+                                    <div>✓ By-Pass Filter</div>
+                                    <div>✓ Return Line Filter</div>
+                                    <div>✓ Breather Element Filter</div>
+                                    <div>✓ 2nd Air Filter</div>
+                                    <div>✓ Hydraulic Oil</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Update Tab -->
+                    <div id="update-service" class="service-tab" style="display: none;">
+                        <div class="update-form">
+                            <h3>Update Tipper Details</h3>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Current HMR</label>
+                                    <input type="number" value="6100">
+                                </div>
+                                <div class="form-group">
+                                    <label>Current KMR</label>
+                                    <input type="number" value="45200">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Service HMR</label>
+                                    <input type="number" value="5000">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Service Type</label>
+                                <select>
+                                    <option>No Service</option>
+                                    <option>1000H Service</option>
+                                    <option>2000H Service</option>
+                                    <option>Other Maintenance</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Service Date</label>
+                                <input type="date">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">Cancel</button>
+                                <button class="btn btn-primary">Update Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
+    
+    <footer>
+        <p>Ashok Leyland Tipper Maintenance Tracking System &copy; 2023</p>
+        <p>Complete service history tracking with email notifications</p>
+    </footer>
+    
     <script>
-        // Enhanced Maintenance parts database with intelligent service intervals
-        const maintenanceParts = {
-            "500": {
-                title: "500 Hour Service (Minor Maintenance)",
-                parts: [
-                    "Drain and replace engine oil (SAE 15W-40)",
-                    "Replace oil filter (OEM part #FIL-ENG-500)",
-                    "Replace primary fuel filter (FF-5001)",
-                    "Inspect secondary fuel filter",
-                    "Clean/replace air filter (check restriction indicator)",
-                    "Grease all chassis points (NLGI #2 lithium complex)",
-                    "Check coolant level and concentration (50/50 mix)",
-                    "Inspect brake lining thickness (min 5mm remaining)",
-                    "Check hydraulic oil level and condition",
-                    "Inspect all hydraulic hoses for leaks/abrasion",
-                    "Check exhaust system for leaks/damage",
-                    "Inspect tire pressure and condition (PSI as per load chart)",
-                    "Check all lights and signals operation",
-                    "Inspect cab mounts and suspension",
-                    "Check windshield washer fluid level",
-                    "Lubricate door hinges and latches",
-                    "Test parking brake function",
-                    "Record battery specific gravity readings",
-                    "Check fan belt tension (10-15mm deflection)"
-                ]
-            },
-            "1000": {
-                title: "1000 Hour Service (Intermediate Maintenance)",
-                parts: [
-                    "Perform all 500hr service items",
-                    "Replace secondary fuel filter (FF-1002)",
-                    "Replace air filter element (AF-1001)",
-                    "Replace hydraulic system filters (HF-1003/1004)",
-                    "Drain and replace transmission fluid (SAE 50)",
-                    "Replace front/rear differential oil (SAE 90)",
-                    "Inspect and adjust brake clearance (5-7mm)",
-                    "Check wheel bearing end play (max 0.1mm)",
-                    "Inspect suspension bushings and pins",
-                    "Check U-joints and drive shafts for play",
-                    "Test alternator output (13.8-14.4V)",
-                    "Inspect starter motor connections",
-                    "Check steering system for leaks/play",
-                    "Inspect cab tilt mechanism",
-                    "Lubricate throttle and clutch linkages",
-                    "Check exhaust aftertreatment system",
-                    "Inspect DEF tank and lines",
-                    "Test emergency stop systems",
-                    "Verify calibration of all gauges",
-                    "Document ECU fault codes"
-                ]
-            },
-            "2000": {
-                title: "2000 Hour Service (Major Overhaul)",
-                parts: [
-                    "Perform all 500hr and 1000hr service items",
-                    "Complete coolant system flush (OEM approved coolant)",
-                    "Replace all hydraulic hoses (mark with installation date)",
-                    "Inspect, clean, and repack wheel bearings",
-                    "Check cylinder head torque (per engine manual)",
-                    "Perform injector leak-off test",
-                    "Clean and inspect turbocharger (check axial play)",
-                    "Replace all breather filters",
-                    "Inspect and clean radiator fins",
-                    "Check compression (varies by engine model)",
-                    "Inspect clutch wear (min 5mm friction material)",
-                    "Test all safety interlocks",
-                    "Inspect frame for cracks/stress points",
-                    "Check body mounting bolts torque",
-                    "Inspect hoist cylinder rods for scoring",
-                    "Test hydraulic pressure (relief valve setting)",
-                    "Inspect all electrical harnesses",
-                    "Replace wiper blades (both sides)",
-                    "Check A/C system performance",
-                    "Verify emissions compliance",
-                    "Update ECU firmware if available",
-                    "Perform load test on battery bank",
-                    "Document all measurements for trend analysis"
-                ]
-            },
-            "5000": {
-                title: "5000 Hour Service (Component Replacement)",
-                parts: [
-                    "Complete engine oil analysis before service",
-                    "Replace timing belt/chain (if equipped)",
-                    "Inspect and replace water pump as needed",
-                    "Replace all coolant hoses",
-                    "Rebuild or replace alternator",
-                    "Service or replace starter motor",
-                    "Replace shock absorbers",
-                    "Rebuild hydraulic cylinders",
-                    "Replace all suspension bushings",
-                    "Inspect and resurface brake drums",
-                    "Replace brake master cylinder",
-                    "Overhaul power steering system",
-                    "Replace cab mounts",
-                    "Refurbish instrument cluster",
-                    "Replace seat suspension",
-                    "Complete chassis repaint (high-wear areas)",
-                    "Update all service decals/labels",
-                    "Perform full alignment check",
-                    "Document remaining component life estimates"
-                ]
-            }
-        };
-
-        // Generate random tipper numbers between 1 and 100
-        const tipperNumbers = [31, 45, 12, 78, 56, 89, 23, 67, 34, 90, 5, 17, 42, 61, 83];
+        // Show selected tipper details
+        function showTipper(regNumber) {
+            // Remove active class from all tipper items
+            document.querySelectorAll('.tipper-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to selected tipper
+            event.currentTarget.classList.add('active');
+            
+            // In a real app, would load the tipper data via AJAX
+            // For demo, we just update the title
+            document.querySelector('.tipper-title').textContent = regNumber;
+        }
         
-        // Sample tipper data with maintenance records
-        const tipperData = tipperNumbers.map((num, index) => {
-            const hmr = Math.floor(Math.random() * 5500) + 100;
-            return {
-                number: num,
-                hmr: hmr,
-                kmr: Math.floor(Math.random() * 150000) + 5000,
-                lastUpdated: new Date().toLocaleDateString(),
-                last500: hmr > 500 ? Math.floor(Math.random() * 400) + 100 : null,
-                last1000: hmr > 1000 ? Math.floor(Math.random() * 900) + 100 : null,
-                last2000: hmr > 2000 ? Math.floor(Math.random() * 1900) + 100 : null,
-                last5000: hmr > 5000 ? Math.floor(Math.random() * 4900) + 100 : null,
-                serviceHistory: []
-            };
+        // Show selected service tab
+        function showServiceTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.service-tab').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId + '-service').style.display = 'block';
+            
+            // Add active class to selected tab
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Handle form submissions
+        document.getElementById('addTipperForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Tipper added successfully! This would connect to a database in a real application.');
+            this.reset();
         });
-
-        // Function to calculate maintenance status
-        function getMaintenanceStatus(tipper) {
-            const status = {
-                alert: false,
-                warning: false,
-                next500: tipper.last500 ? tipper.last500 + 500 : 500,
-                next1000: tipper.last1000 ? tipper.last1000 + 1000 : 1000,
-                next2000: tipper.last2000 ? tipper.last2000 + 2000 : 2000,
-                next5000: tipper.last5000 ? tipper.last5000 + 5000 : 5000,
-                due500: false,
-                due1000: false,
-                due2000: false,
-                due5000: false
-            };
-            
-            // Check 500hr maintenance
-            if (tipper.hmr >= status.next500) {
-                status.due500 = true;
-                status.alert = true;
-            } else if (tipper.hmr >= status.next500 - 50) {
-                status.due500 = true;
-                status.warning = true;
-            }
-            
-            // Check 1000hr maintenance
-            if (tipper.hmr >= status.next1000) {
-                status.due1000 = true;
-                status.alert = true;
-            } else if (tipper.hmr >= status.next1000 - 50) {
-                status.due1000 = true;
-                status.warning = true;
-            }
-            
-            // Check 2000hr maintenance
-            if (tipper.hmr >= status.next2000) {
-                status.due2000 = true;
-                status.alert = true;
-            } else if (tipper.hmr >= status.next2000 - 50) {
-                status.due2000 = true;
-                status.warning = true;
-            }
-            
-            // Check 5000hr maintenance
-            if (tipper.hmr >= status.next5000) {
-                status.due5000 = true;
-                status.alert = true;
-            } else if (tipper.hmr >= status.next5000 - 100) {
-                status.due5000 = true;
-                status.warning = true;
-            }
-            
-            return status;
-        }
-
-        // Function to render tipper boxes
-        function renderTipperBoxes() {
-            const container = document.getElementById('tipperContainer');
-            container.innerHTML = '';
-            let alertCount = 0;
-
-            tipperData.forEach((tipper, index) => {
-                const status = getMaintenanceStatus(tipper);
-                const box = document.createElement('div');
-                box.className = 'tipper-box';
-                
-                if (status.alert) {
-                    box.classList.add('alert');
-                    alertCount++;
-                } else if (status.warning) {
-                    box.classList.add('warning');
-                    alertCount++;
-                }
-                
-                // Generate service parts information
-                const partsInfo = [];
-                if (status.due500 || status.due1000 || status.due2000 || status.due5000) {
-                    partsInfo.push('<div class="parts-title">Required Services:</div><ul class="parts-list">');
-                    
-                    if (status.due500) {
-                        partsInfo.push('<li>500hr Service</li>');
-                    }
-                    if (status.due1000) {
-                        partsInfo.push('<li>1000hr Service</li>');
-                    }
-                    if (status.due2000) {
-                        partsInfo.push('<li>2000hr Service</li>');
-                    }
-                    if (status.due5000) {
-                        partsInfo.push('<li>5000hr Service</li>');
-                    }
-                    
-                    partsInfo.push('</ul>');
-                }
-                
-                box.innerHTML = `
-                    <div class="maintenance-status">
-                        <div class="status-dot ${tipper.last500 ? 'completed' : status.due500 ? (status.alert ? 'overdue' : 'due') : ''}" 
-                             title="500hr Maintenance - ${tipper.last500 ? `Last done at ${tipper.last500}hrs` : 'Never done'}"></div>
-                        <div class="status-dot ${tipper.last1000 ? 'completed' : status.due1000 ? (status.alert ? 'overdue' : 'due') : ''}" 
-                             title="1000hr Maintenance - ${tipper.last1000 ? `Last done at ${tipper.last1000}hrs` : 'Never done'}"></div>
-                        <div class="status-dot ${tipper.last2000 ? 'completed' : status.due2000 ? (status.alert ? 'overdue' : 'due') : ''}" 
-                             title="2000hr Maintenance - ${tipper.last2000 ? `Last done at ${tipper.last2000}hrs` : 'Never done'}"></div>
-                        <div class="status-dot ${tipper.last5000 ? 'completed' : status.due5000 ? (status.alert ? 'overdue' : 'due') : ''}" 
-                             title="5000hr Maintenance - ${tipper.last5000 ? `Last done at ${tipper.last5000}hrs` : 'Never done'}"></div>
-                    </div>
-                    <div class="tipper-number">Tipper ${tipper.number}</div>
-                    <div class="tipper-data">
-                        <span class="data-label">HMR:</span>
-                        <span class="data-value">${tipper.hmr} hrs</span>
-                    </div>
-                    <div class="tipper-data">
-                        <span class="data-label">KMR:</span>
-                        <span class="data-value">${tipper.kmr.toLocaleString()} km</span>
-                    </div>
-                    <div class="tipper-data">
-                        <span class="data-label">Next 500hr:</span>
-                        <span class="data-value">${status.next500} hrs</span>
-                    </div>
-                    <div class="tipper-data">
-                        <span class="data-label">Next 1000hr:</span>
-                        <span class="data-value">${status.next1000} hrs</span>
-                    </div>
-                    <div class="tipper-data">
-                        <span class="data-label">Next 2000hr:</span>
-                        <span class="data-value">${status.next2000} hrs</span>
-                    </div>
-                    <div class="tipper-data">
-                        <span class="data-label">Next 5000hr:</span>
-                        <span class="data-value">${status.next5000} hrs</span>
-                    </div>
-                    <div class="tipper-data" style="font-size:12px; margin-top:10px;">
-                        Last updated: ${tipper.lastUpdated}
-                    </div>
-                    ${partsInfo.length > 0 ? `<div class="service-parts">${partsInfo.join('')}</div>` : ''}
-                    <div class="update-form">
-                        <input type="number" class="update-input" id="hmr-${index}" placeholder="New HMR">
-                        <input type="number" class="update-input" id="kmr-${index}" placeholder="New KMR">
-                        <button class="update-btn" onclick="updateTipper(${index})">Update Readings</button>
-                        <button class="maintenance-btn" onclick="showMaintenanceModal(${index})">Record Maintenance</button>
-                    </div>
-                `;
-                container.appendChild(box);
-            });
-
-            // Update alert bar
-            const alertBar = document.getElementById('alertBar');
-            if (alertCount > 0) {
-                alertBar.textContent = `⚠️ ${alertCount} tipper(s) require maintenance attention!`;
-                alertBar.style.backgroundColor = '#FFEBEE';
-                alertBar.style.color = '#D32F2F';
-            } else {
-                alertBar.textContent = '✓ All tippers operating normally';
-                alertBar.style.backgroundColor = '#E8F5E9';
-                alertBar.style.color = '#2E7D32';
-                alertBar.classList.add('normal-status');
-            }
-        }
-
-        // Function to update tipper data
-        function updateTipper(index) {
-            const hmrInput = document.getElementById(`hmr-${index}`);
-            const kmrInput = document.getElementById(`kmr-${index}`);
-            
-            if(hmrInput.value) {
-                tipperData[index].hmr = parseInt(hmrInput.value);
-                hmrInput.value = '';
-            }
-            if(kmrInput.value) {
-                tipperData[index].kmr = parseInt(kmrInput.value);
-                kmrInput.value = '';
-            }
-            
-            tipperData[index].lastUpdated = new Date().toLocaleDateString();
-            renderTipperBoxes();
-        }
-
-        // Function to show maintenance modal
-        function showMaintenanceModal(index) {
-            const modal = document.getElementById('maintenanceModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
-            
-            modalTitle.textContent = `Record Maintenance - Tipper ${tipperData[index].number}`;
-            
-            // Create service type selection
-            let content = `
-                <p>Current HMR: ${tipperData[index].hmr} hours</p>
-                <div class="service-type">
-                    <h3>Select Service Type</h3>
-                    <div class="service-checklist">
-                        <div class="checklist-item">
-                            <input type="radio" id="service500" name="serviceType" value="500" checked>
-                            <label for="service500">500 Hour Service</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" id="service1000" name="serviceType" value="1000">
-                            <label for="service1000">1000 Hour Service</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" id="service2000" name="serviceType" value="2000">
-                            <label for="service2000">2000 Hour Service</label>
-                        </div>
-                        <div class="checklist-item">
-                            <input type="radio" id="service5000" name="serviceType" value="5000" ${tipperData[index].hmr < 5000 ? 'disabled' : ''}>
-                            <label for="service5000" ${tipperData[index].hmr < 5000 ? 'style="color:#aaa;"' : ''}>5000 Hour Service ${tipperData[index].hmr < 5000 ? '(Not available yet)' : ''}</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="servicePartsContainer"></div>
-                
-                <div style="margin-top:20px;">
-                    <label for="technician">Technician Name:</label>
-                    <input type="text" id="technician" class="update-input" style="width:100%;">
-                </div>
-                
-                <div style="margin-top:20px;">
-                    <label for="notes">Service Notes:</label>
-                    <textarea id="notes" class="update-input" style="width:100%; height:80px;"></textarea>
-                </div>
-                
-                <button class="update-btn" style="margin-top:20px;" onclick="recordMaintenance(${index})">Confirm Maintenance</button>
-            `;
-            
-            modalContent.innerHTML = content;
-            
-            // Add event listeners to radio buttons to show appropriate parts
-            document.querySelectorAll('input[name="serviceType"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    updateServicePartsDisplay(this.value);
-                });
-            });
-            
-            // Initial display of parts
-            updateServicePartsDisplay('500');
-            
-            modal.style.display = 'block';
-            
-            // Close modal when clicking on X
-            document.querySelector('.close').onclick = function() {
-                modal.style.display = 'none';
-            }
-            
-            // Close modal when clicking outside
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-            }
-        }
         
-        function updateServicePartsDisplay(serviceType) {
-            const container = document.getElementById('servicePartsContainer');
-            const service = maintenanceParts[serviceType];
-            
-            let partsHTML = `
-                <div class="service-type">
-                    <h3>${service.title} Checklist</h3>
-                    <div class="service-checklist">
-            `;
-            
-            service.parts.forEach(part => {
-                partsHTML += `
-                    <div class="checklist-item">
-                        <input type="checkbox" id="part-${part.replace(/\s+/g, '-')}" checked>
-                        <label for="part-${part.replace(/\s+/g, '-')}">${part}</label>
-                    </div>
-                `;
-            });
-            
-            partsHTML += `
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = partsHTML;
-        }
-
-        // Function to record maintenance
-        function recordMaintenance(index) {
-            const modal = document.getElementById('maintenanceModal');
-            const serviceType = document.querySelector('input[name="serviceType"]:checked').value;
-            const technician = document.getElementById('technician').value;
-            const notes = document.getElementById('notes').value;
-            
-            if (!technician) {
-                alert("Please enter technician name");
-                return;
-            }
-            
-            // Record the maintenance
-            const now = new Date();
-            const serviceRecord = {
-                type: serviceType,
-                date: now.toLocaleDateString(),
-                time: now.toLocaleTimeString(),
-                hmr: tipperData[index].hmr,
-                technician: technician,
-                notes: notes
-            };
-            
-            tipperData[index].serviceHistory.push(serviceRecord);
-            
-            // Update the last service record
-            if (serviceType === '500') {
-                tipperData[index].last500 = tipperData[index].hmr;
-            } else if (serviceType === '1000') {
-                tipperData[index].last1000 = tipperData[index].hmr;
-            } else if (serviceType === '2000') {
-                tipperData[index].last2000 = tipperData[index].hmr;
-            } else if (serviceType === '5000') {
-                tipperData[index].last5000 = tipperData[index].hmr;
-            }
-            
-            alert(`${maintenanceParts[serviceType].title} recorded for Tipper ${tipperData[index].number}`);
-            modal.style.display = 'none';
-            renderTipperBoxes();
-        }
-
-        // Initial render
-        renderTipperBoxes();
+        // Initialize the first tipper as active
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show first tipper as active by default
+            document.querySelector('.tipper-item').click();
+        });
     </script>
 </body>
 </html>
