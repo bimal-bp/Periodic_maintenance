@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGX Mineral Tipper Maintenance Tracker</title>
+    <title>SGX Mineral Tipper Maintenance</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -14,17 +14,18 @@
             --dark: #2c3e50;
         }
         
-        * {
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
             color: #333;
-            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
         header {
@@ -32,78 +33,20 @@
             color: white;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 10;
+            margin-bottom: 30px;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-        }
-        
-        .tipper-view {
+        .tipper-container {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            min-height: calc(100vh - 180px);
         }
         
-        .tipper-list {
+        .tipper-card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 15px;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: sticky;
-            top: 20px;
-        }
-        
-        .tipper-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-left: 4px solid #ddd;
-            background: white;
-        }
-        
-        .tipper-item:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .tipper-item.active {
-            background-color: #e3f2fd;
-            border-left-color: var(--primary);
-        }
-        
-        .tipper-item.overdue {
-            border-left-color: var(--secondary);
-        }
-        
-        .tipper-item.due-soon {
-            border-left-color: var(--warning);
-        }
-        
-        .reg-number {
-            font-weight: bold;
-            font-size: 16px;
-        }
-        
-        .current-hmr {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .tipper-details {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
             position: relative;
         }
         
@@ -111,52 +54,52 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
         }
         
-        .tipper-title {
-            font-size: 24px;
+        .tipper-name {
+            font-size: 20px;
             font-weight: bold;
+            color: var(--primary);
         }
         
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 4px;
+        .status {
+            padding: 5px 15px;
+            border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
             color: white;
         }
         
-        .badge-danger {
-            background-color: var(--secondary);
-        }
-        
-        .badge-warning {
-            background-color: var(--warning);
-        }
-        
-        .badge-success {
+        .status.green {
             background-color: var(--success);
         }
         
-        .current-stats {
+        .status.yellow {
+            background-color: var(--warning);
+        }
+        
+        .status.red {
+            background-color: var(--secondary);
+        }
+        
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 20px;
         }
         
         .stat-card {
             background: #f9f9f9;
-            padding: 15px;
+            padding: 12px;
             border-radius: 6px;
-            text-align: center;
         }
         
         .stat-value {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             margin: 5px 0;
         }
@@ -166,135 +109,39 @@
             color: #666;
         }
         
-        .service-tabs {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .tab.active {
-            border-bottom-color: var(--primary);
-            font-weight: bold;
-        }
-        
-        .service-content {
-            min-height: 300px;
-        }
-        
-        .service-section {
-            margin-bottom: 30px;
-        }
-        
-        .service-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .service-title .badge {
-            margin-left: 10px;
-        }
-        
-        .service-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-        
-        .service-item {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 4px;
-            border-left: 4px solid var(--primary);
-            display: flex;
-            align-items: center;
-        }
-        
-        .service-item.done {
-            border-left-color: var(--success);
-            background-color: #e8f5e9;
-        }
-        
-        .service-item input {
-            margin-right: 10px;
-        }
-        
-        .service-history {
-            margin-top: 30px;
-        }
-        
-        .history-item {
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        
-        .history-items {
-            font-size: 14px;
-            columns: 2;
-            column-gap: 20px;
-        }
-        
-        .update-form {
+        .update-section {
             background: #f5f5f5;
             padding: 20px;
             border-radius: 8px;
-            margin-top: 30px;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
+            margin: 20px 0;
         }
         
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 500;
         }
         
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-        }
-        
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+            font-size: 16px;
         }
         
         .btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 500;
+            font-size: 16px;
+            margin-top: 10px;
         }
         
         .btn-primary {
@@ -302,98 +149,104 @@
             color: white;
         }
         
-        .btn-secondary {
-            background-color: #ddd;
-            color: #333;
+        .service-section {
+            margin: 25px 0 15px;
         }
         
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .notification-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        
-        .modal-header {
+        .service-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
         }
         
-        .modal-title {
-            font-size: 20px;
+        .countdown {
+            font-size: 17px;
             font-weight: bold;
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-        
-        footer {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
             text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            background-color: var(--dark);
-            color: white;
-            position: relative;
-            z-index: 10;
         }
         
-        @media (max-width: 900px) {
-            .tipper-view {
-                grid-template-columns: 1fr;
-            }
-            
-            .tipper-list {
-                position: relative;
-                top: auto;
-                max-height: none;
-            }
-            
-            .current-stats {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .history-items {
-                columns: 1;
-            }
+        .countdown.normal {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border-left: 5px solid var(--success);
         }
         
-        @media (max-width: 600px) {
-            .current-stats {
+        .countdown.warning {
+            background-color: #fff8e1;
+            color: var(--warning);
+            border-left: 5px solid var(--warning);
+        }
+        
+        .countdown.danger {
+            background-color: #ffebee;
+            color: var(--secondary);
+            border-left: 5px solid var(--secondary);
+        }
+        
+        .service-items {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .service-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary);
+            font-size: 14px;
+        }
+        
+        .alert-banner {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .alert-banner.warning {
+            background-color: #fff3e0;
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+        
+        .alert-banner.danger {
+            background-color: #ffebee;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+        
+        .alert-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .email-notification {
+            background-color: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .tipper-container {
                 grid-template-columns: 1fr;
             }
             
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .service-items {
+            .stats-grid, .service-items {
                 grid-template-columns: 1fr;
             }
         }
@@ -401,982 +254,371 @@
 </head>
 <body>
     <header>
-        <h1>SGX Mineral Pvt Ltd Tipper Maintenance Tracker</h1>
-        <p>Complete service history for each tipper</p>
+        <h1>SGX Mineral Tipper Maintenance</h1>
+        <p>Dual Service Interval Tracking with Automated Alerts</p>
     </header>
     
     <div class="container">
-        <div class="tipper-view">
-            <div class="tipper-list">
-                <h3>Tipper Fleet</h3>
-                <div class="tipper-item overdue active" onclick="showTipper('SGX-MN-1001')">
-                    <div class="reg-number">SGX-MN-1001</div>
-                    <div class="current-hmr">HMR: 6,100 | KMR: 45,200</div>
-                    <small class="alert-danger">OVERDUE (100H)</small>
-                </div>
-                <div class="tipper-item overdue" onclick="showTipper('SGX-MN-1002')">
-                    <div class="reg-number">SGX-MN-1002</div>
-                    <div class="current-hmr">HMR: 7,200 | KMR: 52,000</div>
-                    <small class="alert-danger">OVERDUE (200H)</small>
-                </div>
-                <div class="tipper-item due-soon" onclick="showTipper('SGX-MN-1003')">
-                    <div class="reg-number">SGX-MN-1003</div>
-                    <div class="current-hmr">HMR: 5,850 | KMR: 42,000</div>
-                    <small class="alert-warning">Due in 150H</small>
-                </div>
-                <div class="tipper-item" onclick="showTipper('SGX-MN-1004')">
-                    <div class="reg-number">SGX-MN-1004</div>
-                    <div class="current-hmr">HMR: 3,800 | KMR: 28,000</div>
-                    <small class="alert-success">On Track</small>
-                </div>
-                <div class="tipper-item" onclick="showTipper('SGX-MN-1005')">
-                    <div class="reg-number">SGX-MN-1005</div>
-                    <div class="current-hmr">HMR: 4,950 | KMR: 36,000</div>
-                    <small class="alert-warning">Due in 50H</small>
-                </div>
-                <div class="tipper-item" onclick="showTipper('SGX-MN-1006')">
-                    <div class="reg-number">SGX-MN-1006</div>
-                    <div class="current-hmr">HMR: 2,300 | KMR: 17,500</div>
-                    <small class="alert-success">On Track</small>
-                </div>
-                <div class="tipper-item" onclick="showTipper('SGX-MN-1007')">
-                    <div class="reg-number">SGX-MN-1007</div>
-                    <div class="current-hmr">HMR: 8,750 | KMR: 65,000</div>
-                    <small class="alert-danger">OVERDUE (750H)</small>
+        <div class="tipper-container">
+            <!-- Tipper AP39W027 (Warning) -->
+            <div class="tipper-card" id="tipper-AP39W027">
+                <div class="tipper-header">
+                    <div class="tipper-name">AP39W027</div>
+                    <div class="status yellow" id="status-AP39W027">DUE SOON</div>
                 </div>
                 
-                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-                    <h4>Add New Tipper</h4>
-                    <form id="addTipperForm" style="margin-top: 10px;">
-                        <div class="form-group">
-                            <input type="text" placeholder="Registration No." required>
-                        </div>
-                        <div class="form-group">
-                            <input type="number" placeholder="Current HMR" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="number" placeholder="Current KMR" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Tipper</button>
-                    </form>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Last Updated HMR</div>
+                        <div class="stat-value" id="hmr-AP39W027">3,950</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last Updated KMR</div>
+                        <div class="stat-value" id="kmr-AP39W027">28,500</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last 1000H Service</div>
+                        <div class="stat-value" id="last-1000h-AP39W027">3,500</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last 2000H Service</div>
+                        <div class="stat-value" id="last-2000h-AP39W027">3,000</div>
+                    </div>
+                </div>
+                
+                <div class="alert-banner warning">
+                    <span class="alert-icon">⚠️</span>
+                    <span>WARNING: 1000H Service due in 50 hours!</span>
+                </div>
+                
+                <div class="update-section">
+                    <h3>Daily Update</h3>
+                    <div class="form-group">
+                        <label>Today's HMR</label>
+                        <input type="number" id="today-hmr-AP39W027" placeholder="Enter current HMR">
+                    </div>
+                    <div class="form-group">
+                        <label>Today's KMR</label>
+                        <input type="number" id="today-kmr-AP39W027" placeholder="Enter current KMR">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateTipper('AP39W027')">Update</button>
+                </div>
+                
+                <!-- 1000H Service Section -->
+                <div class="service-section">
+                    <div class="service-header">
+                        <span>1000H Service</span>
+                        <span>Next Due: 4,500 HMR</span>
+                    </div>
+                    <div class="countdown danger" id="countdown-1000h-AP39W027">
+                        Due in: 50 hours
+                    </div>
+                    <div class="service-items">
+                        <div class="service-item">Engine Oil Change</div>
+                        <div class="service-item">Oil Filter Replacement</div>
+                        <div class="service-item">Fuel Filter Change</div>
+                        <div class="service-item">Air Filter Cleaning</div>
+                    </div>
+                </div>
+                
+                <!-- 2000H Service Section -->
+                <div class="service-section">
+                    <div class="service-header">
+                        <span>2000H Service</span>
+                        <span>Next Due: 5,000 HMR</span>
+                    </div>
+                    <div class="countdown normal" id="countdown-2000h-AP39W027">
+                        Due in: 1,050 hours
+                    </div>
+                    <div class="service-items">
+                        <div class="service-item">Transmission Oil Change</div>
+                        <div class="service-item">Differential Oil Change</div>
+                        <div class="service-item">Brake System Inspection</div>
+                        <div class="service-item">Coolant Replacement</div>
+                    </div>
                 </div>
             </div>
             
-            <div class="tipper-details">
+            <!-- Tipper AP39WO28 (Overdue) -->
+            <div class="tipper-card" id="tipper-AP39WO28">
                 <div class="tipper-header">
-                    <div class="tipper-title">SGX-MN-1001</div>
-                    <div class="status-badge badge-danger">OVERDUE (100H)</div>
+                    <div class="tipper-name">AP39WO28</div>
+                    <div class="status red" id="status-AP39WO28">OVERDUE</div>
                 </div>
                 
-                <div class="current-stats">
+                <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value">6,100</div>
-                        <div class="stat-label">Current HMR</div>
+                        <div class="stat-label">Last Updated HMR</div>
+                        <div class="stat-value" id="hmr-AP39WO28">7,050</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">45,200</div>
-                        <div class="stat-label">Current KMR</div>
+                        <div class="stat-label">Last Updated KMR</div>
+                        <div class="stat-value" id="kmr-AP39WO28">51,200</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">5,000</div>
-                        <div class="stat-label">Last Service HMR</div>
+                        <div class="stat-label">Last 1000H Service</div>
+                        <div class="stat-value" id="last-1000h-AP39WO28">6,500</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last 2000H Service</div>
+                        <div class="stat-value" id="last-2000h-AP39WO28">5,000</div>
                     </div>
                 </div>
                 
-                <div class="service-tabs">
-                    <div class="tab active" onclick="showServiceTab('current')">Current Service</div>
-                    <div class="tab" onclick="showServiceTab('history')">Service History</div>
-                    <div class="tab" onclick="showServiceTab('update')">Update</div>
-                    <div class="tab" onclick="showServiceTab('notify')">Notify</div>
+                <div class="alert-banner danger">
+                    <span class="alert-icon">⚠️</span>
+                    <span>URGENT: 2000H Service overdue by 50 hours!</span>
                 </div>
                 
-                <div class="service-content">
-                    <!-- Current Service Tab -->
-                    <div id="current-service" class="service-tab">
-                        <div class="service-section">
-                            <div class="service-title">
-                                1000H Service <span class="badge badge-danger">OVERDUE</span>
-                            </div>
-                            <p>Next service was due at 6,000 HMR (100 hours overdue)</p>
-                            
-                            <div class="service-items">
-                                <div class="service-item">
-                                    <input type="checkbox" id="engine-oil">
-                                    <label for="engine-oil">Engine Oil</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="oil-filter">
-                                    <label for="oil-filter">Engine Oil Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="fuel-filter">
-                                    <label for="fuel-filter">Fuel Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="air-filter">
-                                    <label for="air-filter">Engine Air Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="bypass-filter">
-                                    <label for="bypass-filter">By-Pass Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="return-filter">
-                                    <label for="return-filter">Return Line Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="breather-filter">
-                                    <label for="breather-filter">Breather Element Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="second-air-filter">
-                                    <label for="second-air-filter">2nd Air Filter</label>
-                                </div>
-                                <div class="service-item">
-                                    <input type="checkbox" id="hydraulic-oil">
-                                    <label for="hydraulic-oil">Hydraulic Oil</label>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions" style="margin-top: 20px;">
-                                <button class="btn btn-secondary">Save Progress</button>
-                                <button class="btn btn-success" onclick="markServiceComplete()">Mark Service Complete</button>
-                            </div>
-                        </div>
+                <div class="email-notification" id="email-notification-AP39WO28">
+                    <strong>Email Sent:</strong> Maintenance team notified about overdue service
+                </div>
+                
+                <div class="update-section">
+                    <h3>Daily Update</h3>
+                    <div class="form-group">
+                        <label>Today's HMR</label>
+                        <input type="number" id="today-hmr-AP39WO28" placeholder="Enter current HMR">
                     </div>
-                    
-                    <!-- Service History Tab -->
-                    <div id="history-service" class="service-tab" style="display: none;">
-                        <div class="service-history">
-                            <h3>Past Services</h3>
-                            
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <span>2000H Service</span>
-                                    <span>Completed at 4,000 HMR on 15/05/2023</span>
-                                </div>
-                                <div class="history-items">
-                                    <div>✓ Rear Axle Oil</div>
-                                    <div>✓ Front Axle Oil</div>
-                                    <div>✓ Air Compressor Overhaul</div>
-                                    <div>✓ Engine Oil (Additional)</div>
-                                    <div>✓ Fuel Filter (Additional)</div>
-                                </div>
-                            </div>
-                            
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <span>1000H Service</span>
-                                    <span>Completed at 3,000 HMR on 10/03/2023</span>
-                                </div>
-                                <div class="history-items">
-                                    <div>✓ Engine Oil</div>
-                                    <div>✓ Engine Oil Filter</div>
-                                    <div>✓ Fuel Filter</div>
-                                    <div>✓ Engine Air Filter</div>
-                                    <div>✓ By-Pass Filter</div>
-                                    <div>✓ Return Line Filter</div>
-                                    <div>✓ Breather Element Filter</div>
-                                    <div>✓ 2nd Air Filter</div>
-                                    <div>✓ Hydraulic Oil</div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>Today's KMR</label>
+                        <input type="number" id="today-kmr-AP39WO28" placeholder="Enter current KMR">
                     </div>
-                    
-                    <!-- Update Tab -->
-                    <div id="update-service" class="service-tab" style="display: none;">
-                        <div class="update-form">
-                            <h3>Update Tipper Details</h3>
-                            
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Current HMR</label>
-                                    <input type="number" id="update-hmr" value="6100">
-                                </div>
-                                <div class="form-group">
-                                    <label>Current KMR</label>
-                                    <input type="number" id="update-kmr" value="45200">
-                                </div>
-                                <div class="form-group">
-                                    <label>Last Service HMR</label>
-                                    <input type="number" id="update-last-service" value="5000">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Service Type</label>
-                                <select id="update-service-type">
-                                    <option>No Service</option>
-                                    <option>1000H Service</option>
-                                    <option selected>2000H Service</option>
-                                    <option>Other Maintenance</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Service Date</label>
-                                <input type="date" id="update-service-date">
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button class="btn btn-secondary">Cancel</button>
-                                <button class="btn btn-primary" onclick="updateTipperDetails()">Update Details</button>
-                            </div>
-                        </div>
+                    <button class="btn btn-primary" onclick="updateTipper('AP39WO28')">Update</button>
+                </div>
+                
+                <!-- 1000H Service Section -->
+                <div class="service-section">
+                    <div class="service-header">
+                        <span>1000H Service</span>
+                        <span>Next Due: 7,500 HMR</span>
                     </div>
-                    
-                    <!-- Notification Tab -->
-                    <div id="notify-service" class="service-tab" style="display: none;">
-                        <div class="update-form">
-                            <h3>Send Maintenance Notification</h3>
-                            
-                            <div class="form-group">
-                                <label>Recipient Email</label>
-                                <input type="email" id="notify-email" value="maintenance@sgxmineral.com">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <input type="text" id="notify-subject" value="Maintenance Required: SGX-MN-1001 is overdue for service">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Message</label>
-                                <textarea id="notify-message" rows="5">Dear Maintenance Team,
-
-Vehicle SGX-MN-1001 is currently overdue for its 1000H service by 100 hours. 
-Current HMR: 6,100 (Service was due at 6,000 HMR)
-
-Please schedule this service at your earliest convenience.
-
-Regards,
-SGX Mineral Maintenance System</textarea>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button class="btn btn-secondary">Cancel</button>
-                                <button class="btn btn-primary" onclick="sendNotification()">Send Notification</button>
-                            </div>
-                        </div>
+                    <div class="countdown normal" id="countdown-1000h-AP39WO28">
+                        Due in: 450 hours
+                    </div>
+                    <div class="service-items">
+                        <div class="service-item">Engine Oil Change</div>
+                        <div class="service-item">Oil Filter Replacement</div>
+                        <div class="service-item">Fuel Filter Change</div>
+                        <div class="service-item">Air Filter Cleaning</div>
+                    </div>
+                </div>
+                
+                <!-- 2000H Service Section -->
+                <div class="service-section">
+                    <div class="service-header">
+                        <span>2000H Service</span>
+                        <span>Next Due: 7,000 HMR</span>
+                    </div>
+                    <div class="countdown danger" id="countdown-2000h-AP39WO28">
+                        OVERDUE by 50 hours
+                    </div>
+                    <div class="service-items">
+                        <div class="service-item">Transmission Oil Change</div>
+                        <div class="service-item">Differential Oil Change</div>
+                        <div class="service-item">Brake System Inspection</div>
+                        <div class="service-item">Coolant Replacement</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Notification Modal -->
-    <div class="notification-modal" id="notificationModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Notification Sent</div>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
-            </div>
-            <div id="modalMessage">
-                Your maintenance notification has been sent successfully.
-            </div>
-            <div class="form-actions" style="margin-top: 20px;">
-                <button class="btn btn-primary" onclick="closeModal()">OK</button>
-            </div>
-        </div>
-    </div>
-    
-    <footer>
-        <p>SGX Mineral Pvt Ltd Tipper Maintenance Tracking System &copy; 2023</p>
-        <p>Complete service history tracking with email notifications</p>
-    </footer>
     
     <script>
-        // Data for all tippers
-        const tipperData = {
-            'SGX-MN-1001': {
-                title: 'SGX-MN-1001',
-                status: 'OVERDUE (100H)',
-                statusClass: 'badge-danger',
-                currentHmr: 6100,
-                currentKmr: 45200,
-                lastServiceHmr: 5000,
-                serviceDue: '1000H Service',
-                serviceStatus: 'OVERDUE',
-                overdueHours: 100,
-                serviceItems: [
-                    'Engine Oil',
-                    'Engine Oil Filter',
-                    'Fuel Filter',
-                    'Engine Air Filter',
-                    'By-Pass Filter',
-                    'Return Line Filter',
-                    'Breather Element Filter',
-                    '2nd Air Filter',
-                    'Hydraulic Oil'
-                ],
-                serviceHistory: [
-                    {
-                        type: '2000H Service',
-                        hmr: 4000,
-                        date: '15/05/2023',
-                        items: [
-                            'Rear Axle Oil',
-                            'Front Axle Oil',
-                            'Air Compressor Overhaul',
-                            'Engine Oil (Additional)',
-                            'Fuel Filter (Additional)'
-                        ]
-                    },
-                    {
-                        type: '1000H Service',
-                        hmr: 3000,
-                        date: '10/03/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    }
-                ],
-                lastServiceDate: '15/05/2023',
-                nextServiceDue: '15/07/2023',
-                operator: 'Rajesh Kumar',
-                location: 'Mine Site A'
+        // Tipper data
+        const tippers = {
+            'AP39W027': {
+                name: 'AP39W027',
+                currentHmr: 3950,
+                currentKmr: 28500,
+                last1000hService: 3500,
+                last2000hService: 3000,
+                next1000hDue: 4500,
+                next2000hDue: 5000,
+                lastUpdateDate: '18/07/2023',
+                emailSent: true
             },
-            'SGX-MN-1002': {
-                title: 'SGX-MN-1002',
-                status: 'OVERDUE (200H)',
-                statusClass: 'badge-danger',
-                currentHmr: 7200,
-                currentKmr: 52000,
-                lastServiceHmr: 6000,
-                serviceDue: '2000H Service',
-                serviceStatus: 'OVERDUE',
-                overdueHours: 200,
-                serviceItems: [
-                    'Rear Axle Oil',
-                    'Front Axle Oil',
-                    'Air Compressor Overhaul',
-                    'Engine Oil (Additional)',
-                    'Fuel Filter (Additional)'
-                ],
-                serviceHistory: [
-                    {
-                        type: '1000H Service',
-                        hmr: 6000,
-                        date: '20/06/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    },
-                    {
-                        type: 'Initial Service',
-                        hmr: 1000,
-                        date: '15/01/2023',
-                        items: [
-                            'Engine Oil',
-                            'Oil Filter',
-                            'Fuel Filter',
-                            'Air Filter'
-                        ]
-                    }
-                ],
-                lastServiceDate: '20/06/2023',
-                nextServiceDue: '20/08/2023',
-                operator: 'Vikram Singh',
-                location: 'Mine Site B'
-            },
-            'SGX-MN-1003': {
-                title: 'SGX-MN-1003',
-                status: 'Due in 150H',
-                statusClass: 'badge-warning',
-                currentHmr: 5850,
-                currentKmr: 42000,
-                lastServiceHmr: 5000,
-                serviceDue: '1000H Service',
-                serviceStatus: 'Due Soon',
-                dueInHours: 150,
-                serviceItems: [
-                    'Engine Oil',
-                    'Engine Oil Filter',
-                    'Fuel Filter',
-                    'Engine Air Filter',
-                    'By-Pass Filter',
-                    'Return Line Filter',
-                    'Breather Element Filter',
-                    '2nd Air Filter',
-                    'Hydraulic Oil'
-                ],
-                serviceHistory: [
-                    {
-                        type: '2000H Service',
-                        hmr: 4000,
-                        date: '10/05/2023',
-                        items: [
-                            'Rear Axle Oil',
-                            'Front Axle Oil',
-                            'Air Compressor Overhaul',
-                            'Engine Oil (Additional)',
-                            'Fuel Filter (Additional)'
-                        ]
-                    },
-                    {
-                        type: '1000H Service',
-                        hmr: 3000,
-                        date: '05/03/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    }
-                ],
-                lastServiceDate: '10/05/2023',
-                nextServiceDue: '10/07/2023',
-                operator: 'Sanjay Patel',
-                location: 'Mine Site C'
-            },
-            'SGX-MN-1004': {
-                title: 'SGX-MN-1004',
-                status: 'On Track',
-                statusClass: 'badge-success',
-                currentHmr: 3800,
-                currentKmr: 28000,
-                lastServiceHmr: 3000,
-                serviceDue: '2000H Service',
-                serviceStatus: 'On Track',
-                dueInHours: 200,
-                serviceItems: [
-                    'Rear Axle Oil',
-                    'Front Axle Oil',
-                    'Air Compressor Overhaul',
-                    'Engine Oil (Additional)',
-                    'Fuel Filter (Additional)'
-                ],
-                serviceHistory: [
-                    {
-                        type: '1000H Service',
-                        hmr: 3000,
-                        date: '01/07/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    },
-                    {
-                        type: 'Initial Service',
-                        hmr: 1000,
-                        date: '15/04/2023',
-                        items: [
-                            'Engine Oil',
-                            'Oil Filter',
-                            'Fuel Filter',
-                            'Air Filter'
-                        ]
-                    }
-                ],
-                lastServiceDate: '01/07/2023',
-                nextServiceDue: '01/09/2023',
-                operator: 'Amit Sharma',
-                location: 'Mine Site A'
-            },
-            'SGX-MN-1005': {
-                title: 'SGX-MN-1005',
-                status: 'Due in 50H',
-                statusClass: 'badge-warning',
-                currentHmr: 4950,
-                currentKmr: 36000,
-                lastServiceHmr: 4000,
-                serviceDue: '1000H Service',
-                serviceStatus: 'Due Soon',
-                dueInHours: 50,
-                serviceItems: [
-                    'Engine Oil',
-                    'Engine Oil Filter',
-                    'Fuel Filter',
-                    'Engine Air Filter',
-                    'By-Pass Filter',
-                    'Return Line Filter',
-                    'Breather Element Filter',
-                    '2nd Air Filter',
-                    'Hydraulic Oil'
-                ],
-                serviceHistory: [
-                    {
-                        type: '2000H Service',
-                        hmr: 4000,
-                        date: '20/06/2023',
-                        items: [
-                            'Rear Axle Oil',
-                            'Front Axle Oil',
-                            'Air Compressor Overhaul',
-                            'Engine Oil (Additional)',
-                            'Fuel Filter (Additional)'
-                        ]
-                    },
-                    {
-                        type: '1000H Service',
-                        hmr: 2000,
-                        date: '10/04/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    }
-                ],
-                lastServiceDate: '20/06/2023',
-                nextServiceDue: '20/08/2023',
-                operator: 'Rahul Verma',
-                location: 'Mine Site B'
-            },
-            'SGX-MN-1006': {
-                title: 'SGX-MN-1006',
-                status: 'On Track',
-                statusClass: 'badge-success',
-                currentHmr: 2300,
-                currentKmr: 17500,
-                lastServiceHmr: 2000,
-                serviceDue: '2000H Service',
-                serviceStatus: 'On Track',
-                dueInHours: 300,
-                serviceItems: [
-                    'Rear Axle Oil',
-                    'Front Axle Oil',
-                    'Air Compressor Overhaul',
-                    'Engine Oil (Additional)',
-                    'Fuel Filter (Additional)'
-                ],
-                serviceHistory: [
-                    {
-                        type: '1000H Service',
-                        hmr: 2000,
-                        date: '15/07/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    },
-                    {
-                        type: 'Initial Service',
-                        hmr: 500,
-                        date: '01/06/2023',
-                        items: [
-                            'Engine Oil',
-                            'Oil Filter',
-                            'Fuel Filter',
-                            'Air Filter'
-                        ]
-                    }
-                ],
-                lastServiceDate: '15/07/2023',
-                nextServiceDue: '15/09/2023',
-                operator: 'Deepak Yadav',
-                location: 'Mine Site C'
-            },
-            'SGX-MN-1007': {
-                title: 'SGX-MN-1007',
-                status: 'OVERDUE (750H)',
-                statusClass: 'badge-danger',
-                currentHmr: 8750,
-                currentKmr: 65000,
-                lastServiceHmr: 7000,
-                serviceDue: '2000H Service',
-                serviceStatus: 'OVERDUE',
-                overdueHours: 750,
-                serviceItems: [
-                    'Rear Axle Oil',
-                    'Front Axle Oil',
-                    'Air Compressor Overhaul',
-                    'Engine Oil (Additional)',
-                    'Fuel Filter (Additional)'
-                ],
-                serviceHistory: [
-                    {
-                        type: '2000H Service',
-                        hmr: 7000,
-                        date: '10/05/2023',
-                        items: [
-                            'Rear Axle Oil',
-                            'Front Axle Oil',
-                            'Air Compressor Overhaul',
-                            'Engine Oil (Additional)',
-                            'Fuel Filter (Additional)'
-                        ]
-                    },
-                    {
-                        type: '1000H Service',
-                        hmr: 5000,
-                        date: '15/03/2023',
-                        items: [
-                            'Engine Oil',
-                            'Engine Oil Filter',
-                            'Fuel Filter',
-                            'Engine Air Filter',
-                            'By-Pass Filter',
-                            'Return Line Filter',
-                            'Breather Element Filter',
-                            '2nd Air Filter',
-                            'Hydraulic Oil'
-                        ]
-                    }
-                ],
-                lastServiceDate: '10/05/2023',
-                nextServiceDue: '10/07/2023',
-                operator: 'Manoj Tiwari',
-                location: 'Mine Site A'
+            'AP39WO28': {
+                name: 'AP39WO28',
+                currentHmr: 7050,
+                currentKmr: 51200,
+                last1000hService: 6500,
+                last2000hService: 5000,
+                next1000hDue: 7500,
+                next2000hDue: 7000,
+                lastUpdateDate: '15/07/2023',
+                emailSent: true
             }
         };
-
-        // Current selected tipper
-        let currentTipper = 'SGX-MN-1001';
-
-        // Show selected tipper details
-        function showTipper(regNumber) {
-            // Remove active class from all tipper items
-            document.querySelectorAll('.tipper-item').forEach(item => {
-                item.classList.remove('active');
-            });
+        
+        // Update tipper data and display
+        function updateTipper(id) {
+            const todayHmr = parseInt(document.getElementById(`today-hmr-${id}`).value);
+            const todayKmr = parseInt(document.getElementById(`today-kmr-${id}`).value);
             
-            // Add active class to selected tipper
-            event.currentTarget.classList.add('active');
+            if (isNaN(todayHmr)) {
+                alert('Please enter valid HMR reading');
+                return;
+            }
             
-            // Set current tipper
-            currentTipper = regNumber;
+            // Update tipper data
+            tippers[id].currentHmr = todayHmr;
+            tippers[id].currentKmr = todayKmr || tippers[id].currentKmr;
+            tippers[id].lastUpdateDate = new Date().toLocaleDateString('en-GB');
             
-            // Get tipper data
-            const tipper = tipperData[regNumber];
+            // Update display
+            updateDisplay(id);
             
-            // Update the display
-            document.querySelector('.tipper-title').textContent = tipper.title;
-            document.querySelector('.status-badge').textContent = tipper.status;
-            document.querySelector('.status-badge').className = 'status-badge ' + tipper.statusClass;
+            // Check for service due and send alerts
+            checkServiceStatus(id);
             
-            // Update stats
-            document.querySelector('.current-stats .stat-card:nth-child(1) .stat-value').textContent = tipper.currentHmr.toLocaleString();
-            document.querySelector('.current-stats .stat-card:nth-child(2) .stat-value').textContent = tipper.currentKmr.toLocaleString();
-            document.querySelector('.current-stats .stat-card:nth-child(3) .stat-value').textContent = tipper.lastServiceHmr.toLocaleString();
+            // Clear form
+            document.getElementById(`today-hmr-${id}`).value = '';
+            document.getElementById(`today-kmr-${id}`).value = '';
+        }
+        
+        // Update the display for a tipper
+        function updateDisplay(id) {
+            const tipper = tippers[id];
             
-            // Update current service tab
-            const currentServiceTab = document.getElementById('current-service');
-            currentServiceTab.querySelector('.service-title').innerHTML = `${tipper.serviceDue} <span class="badge ${tipper.statusClass}">${tipper.serviceStatus}</span>`;
+            // Update basic stats
+            document.getElementById(`hmr-${id}`).textContent = tipper.currentHmr.toLocaleString();
+            document.getElementById(`kmr-${id}`).textContent = tipper.currentKmr.toLocaleString();
             
-            if (tipper.serviceStatus === 'OVERDUE') {
-                currentServiceTab.querySelector('p').textContent = `Next service was due at ${tipper.lastServiceHmr + 1000} HMR (${tipper.overdueHours} hours overdue)`;
-            } else if (tipper.serviceStatus === 'Due Soon') {
-                currentServiceTab.querySelector('p').textContent = `Next service due at ${tipper.lastServiceHmr + 1000} HMR (due in ${tipper.dueInHours} hours)`;
+            // Calculate hours remaining/overdue for both services
+            const hoursTo1000h = tipper.next1000hDue - tipper.currentHmr;
+            const hoursTo2000h = tipper.next2000hDue - tipper.currentHmr;
+            
+            // Determine overall status
+            let overallStatus = 'green';
+            let alertMessage = '';
+            
+            // Update 1000H service display
+            updateServiceDisplay(id, '1000h', hoursTo1000h, tipper.next1000hDue);
+            
+            // Update 2000H service display
+            updateServiceDisplay(id, '2000h', hoursTo2000h, tipper.next2000hDue);
+            
+            // Set overall status based on most urgent service
+            if (hoursTo1000h <= 0 || hoursTo2000h <= 0) {
+                overallStatus = 'red';
+                const overdueService = hoursTo1000h <= 0 ? '1000H' : '2000H';
+                const overdueHours = Math.abs(hoursTo1000h <= 0 ? hoursTo1000h : hoursTo2000h);
+                alertMessage = `URGENT: ${overdueService} Service overdue by ${overdueHours} hours!`;
+            } else if (hoursTo1000h <= 50 || hoursTo2000h <= 50) {
+                overallStatus = 'red';
+                const dueService = hoursTo1000h <= 50 ? '1000H' : '2000H';
+                alertMessage = `URGENT: ${dueService} Service due in ${hoursTo1000h <= 50 ? hoursTo1000h : hoursTo2000h} hours!`;
+            } else if (hoursTo1000h <= 100 || hoursTo2000h <= 100) {
+                overallStatus = 'yellow';
+                const dueService = hoursTo1000h <= 100 ? '1000H' : '2000H';
+                alertMessage = `WARNING: ${dueService} Service due in ${hoursTo1000h <= 100 ? hoursTo1000h : hoursTo2000h} hours`;
+            }
+            
+            // Update status badge
+            const statusElement = document.getElementById(`status-${id}`);
+            statusElement.className = `status ${overallStatus}`;
+            
+            if (overallStatus === 'green') {
+                statusElement.textContent = 'ON TRACK';
+            } else if (overallStatus === 'yellow') {
+                statusElement.textContent = 'DUE SOON';
             } else {
-                currentServiceTab.querySelector('p').textContent = `Next service due at ${tipper.lastServiceHmr + 1000} HMR`;
+                statusElement.textContent = 'OVERDUE';
             }
             
-            // Update service items
-            const serviceItemsContainer = currentServiceTab.querySelector('.service-items');
-            serviceItemsContainer.innerHTML = '';
+            // Show email notification if sent
+            if (tipper.emailSent) {
+                document.getElementById(`email-notification-${id}`).style.display = 'block';
+            }
+        }
+        
+        // Update service display
+        function updateServiceDisplay(id, serviceType, hoursRemaining, nextDueAt) {
+            const countdownElement = document.getElementById(`countdown-${serviceType}-${id}`);
+            const serviceName = serviceType === '1000h' ? '1000H' : '2000H';
             
-            tipper.serviceItems.forEach(item => {
-                const serviceItem = document.createElement('div');
-                serviceItem.className = 'service-item';
-                serviceItem.innerHTML = `
-                    <input type="checkbox" id="${item.toLowerCase().replace(/\s+/g, '-')}">
-                    <label for="${item.toLowerCase().replace(/\s+/g, '-')}">${item}</label>
-                `;
-                serviceItemsContainer.appendChild(serviceItem);
-            });
-            
-            // Update service history
-            const historyTab = document.getElementById('history-service');
-            const historyContainer = historyTab.querySelector('.service-history');
-            historyContainer.innerHTML = '<h3>Past Services</h3>';
-            
-            tipper.serviceHistory.forEach(service => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                
-                const itemsHtml = service.items.map(item => `<div>✓ ${item}</div>`).join('');
-                
-                historyItem.innerHTML = `
-                    <div class="history-header">
-                        <span>${service.type}</span>
-                        <span>Completed at ${service.hmr} HMR on ${service.date}</span>
-                    </div>
-                    <div class="history-items">
-                        ${itemsHtml}
-                    </div>
-                `;
-                
-                historyContainer.appendChild(historyItem);
-            });
-            
-            // Update form with current values
-            const updateForm = document.getElementById('update-service');
-            updateForm.querySelector('#update-hmr').value = tipper.currentHmr;
-            updateForm.querySelector('#update-kmr').value = tipper.currentKmr;
-            updateForm.querySelector('#update-last-service').value = tipper.lastServiceHmr;
-            updateForm.querySelector('#update-service-date').valueAsDate = new Date();
-            
-            // Update notification form
-            const notifyForm = document.getElementById('notify-service');
-            notifyForm.querySelector('#notify-subject').value = `Maintenance Required: ${tipper.title} is ${tipper.status.toLowerCase()} for service`;
-            
-            let message = `Dear Maintenance Team,\n\n`;
-            message += `Vehicle ${tipper.title} is currently ${tipper.status.toLowerCase()} for its ${tipper.serviceDue}.\n`;
-            
-            if (tipper.serviceStatus === 'OVERDUE') {
-                message += `Current HMR: ${tipper.currentHmr} (Service was due at ${tipper.lastServiceHmr + 1000} HMR - ${tipper.overdueHours} hours overdue)\n\n`;
-            } else if (tipper.serviceStatus === 'Due Soon') {
-                message += `Current HMR: ${tipper.currentHmr} (Service due in ${tipper.dueInHours} hours at ${tipper.lastServiceHmr + 1000} HMR)\n\n`;
+            if (hoursRemaining <= 0) {
+                // Overdue
+                const overdueHours = Math.abs(hoursRemaining);
+                countdownElement.textContent = `OVERDUE by ${overdueHours} hours`;
+                countdownElement.className = 'countdown danger';
+            } else if (hoursRemaining <= 50) {
+                // Due immediately (0-50 hours)
+                countdownElement.textContent = `Due in ${hoursRemaining} hours`;
+                countdownElement.className = 'countdown danger';
+            } else if (hoursRemaining <= 100) {
+                // Warning (50-100 hours)
+                countdownElement.textContent = `Due in ${hoursRemaining} hours`;
+                countdownElement.className = 'countdown warning';
             } else {
-                message += `Current HMR: ${tipper.currentHmr} (Next service due at ${tipper.lastServiceHmr + 1000} HMR)\n\n`;
+                // Normal (>100 hours)
+                countdownElement.textContent = `Due in ${hoursRemaining} hours`;
+                countdownElement.className = 'countdown normal';
+            }
+        }
+        
+        // Check service status and send alerts
+        function checkServiceStatus(id) {
+            const tipper = tippers[id];
+            const hoursTo1000h = tipper.next1000hDue - tipper.currentHmr;
+            const hoursTo2000h = tipper.next2000hDue - tipper.currentHmr;
+            
+            // Check if we need to send email alerts
+            if (hoursTo1000h <= 0 || hoursTo2000h <= 0 || 
+                hoursTo1000h <= 100 || hoursTo2000h <= 100) {
+                sendEmailAlert(id, hoursTo1000h, hoursTo2000h);
+                tipper.emailSent = true;
+                document.getElementById(`email-notification-${id}`).style.display = 'block';
+            }
+        }
+        
+        // Send email alert
+        function sendEmailAlert(id, hoursTo1000h, hoursTo2000h) {
+            const tipper = tippers[id];
+            let subject = '';
+            let message = '';
+            
+            if (hoursTo1000h <= 0 || hoursTo2000h <= 0) {
+                // Overdue alert
+                const overdueService = hoursTo1000h <= 0 ? '1000H' : '2000H';
+                const overdueHours = Math.abs(hoursTo1000h <= 0 ? hoursTo1000h : hoursTo2000h);
+                subject = `URGENT: ${tipper.name} ${overdueService} Service OVERDUE`;
+                message = `Vehicle ${tipper.name} is overdue for ${overdueService} service by ${overdueHours} hours.\n\n` +
+                          `Current HMR: ${tipper.currentHmr}\n` +
+                          `${overdueService} Service was due at: ${hoursTo1000h <= 0 ? tipper.next1000hDue : tipper.next2000hDue} HMR\n\n` +
+                          `Please service immediately to avoid equipment damage.`;
+            } else if (hoursTo1000h <= 50 || hoursTo2000h <= 50) {
+                // Due immediately alert
+                const dueService = hoursTo1000h <= 50 ? '1000H' : '2000H';
+                const dueHours = hoursTo1000h <= 50 ? hoursTo1000h : hoursTo2000h;
+                subject = `URGENT: ${tipper.name} ${dueService} Service Due Soon`;
+                message = `Vehicle ${tipper.name} needs ${dueService} service in ${dueHours} hours.\n\n` +
+                          `Current HMR: ${tipper.currentHmr}\n` +
+                          `${dueService} Service due at: ${hoursTo1000h <= 50 ? tipper.next1000hDue : tipper.next2000hDue} HMR\n\n` +
+                          `Please schedule this service immediately.`;
+            } else if (hoursTo1000h <= 100 || hoursTo2000h <= 100) {
+                // Warning alert
+                const dueService = hoursTo1000h <= 100 ? '1000H' : '2000H';
+                const dueHours = hoursTo1000h <= 100 ? hoursTo1000h : hoursTo2000h;
+                subject = `WARNING: ${tipper.name} ${dueService} Service Approaching`;
+                message = `Vehicle ${tipper.name} will need ${dueService} service in ${dueHours} hours.\n\n` +
+                          `Current HMR: ${tipper.currentHmr}\n` +
+                          `${dueService} Service due at: ${hoursTo1000h <= 100 ? tipper.next1000hDue : tipper.next2000hDue} HMR\n\n` +
+                          `Please plan for this upcoming service.`;
             }
             
-            message += `Operator: ${tipper.operator}\n`;
-            message += `Location: ${tipper.location}\n\n`;
-            message += `Please schedule this service at your earliest convenience.\n\nRegards,\nSGX Mineral Maintenance System`;
-            
-            notifyForm.querySelector('#notify-message').value = message;
-        }
-        
-        // Show selected service tab
-        function showServiceTab(tabId) {
-            // Hide all tabs
-            document.querySelectorAll('.service-tab').forEach(tab => {
-                tab.style.display = 'none';
-            });
-            
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabId + '-service').style.display = 'block';
-            
-            // Add active class to selected tab
-            event.currentTarget.classList.add('active');
-        }
-        
-        // Update tipper details
-        function updateTipperDetails() {
-            const hmr = parseInt(document.getElementById('update-hmr').value);
-            const kmr = parseInt(document.getElementById('update-kmr').value);
-            const lastService = parseInt(document.getElementById('update-last-service').value);
-            const serviceType = document.getElementById('update-service-type').value;
-            const serviceDate = document.getElementById('update-service-date').value;
-            
-            // Update the tipper data
-            tipperData[currentTipper].currentHmr = hmr;
-            tipperData[currentTipper].currentKmr = kmr;
-            tipperData[currentTipper].lastServiceHmr = lastService;
-            
-            if (serviceType !== 'No Service') {
-                // Add to service history
-                tipperData[currentTipper].serviceHistory.unshift({
-                    type: serviceType,
-                    hmr: lastService,
-                    date: formatDate(new Date(serviceDate)),
-                    items: tipperData[currentTipper].serviceItems
-                });
-                
-                // Update last service date
-                tipperData[currentTipper].lastServiceDate = formatDate(new Date(serviceDate));
-                
-                // Calculate next service due date (assuming 2 months for demo)
-                const nextServiceDate = new Date(serviceDate);
-                nextServiceDate.setMonth(nextServiceDate.getMonth() + 2);
-                tipperData[currentTipper].nextServiceDue = formatDate(nextServiceDate);
-            }
-            
-            // Re-show the tipper to update display
-            showTipper(currentTipper);
-            
-            // Show success message
-            showModal('Tipper details updated successfully!');
-        }
-        
-        // Mark service as complete
-        function markServiceComplete() {
-            // Get all checked items
-            const checkedItems = Array.from(document.querySelectorAll('#current-service input[type="checkbox"]:checked'))
-                                  .map(checkbox => checkbox.nextElementSibling.textContent);
-            
-            // Add to service history
-            tipperData[currentTipper].serviceHistory.unshift({
-                type: tipperData[currentTipper].serviceDue,
-                hmr: tipperData[currentTipper].currentHmr,
-                date: formatDate(new Date()),
-                items: checkedItems
-            });
-            
-            // Update last service HMR
-            tipperData[currentTipper].lastServiceHmr = tipperData[currentTipper].currentHmr;
-            
-            // Update status
-            tipperData[currentTipper].status = 'On Track';
-            tipperData[currentTipper].statusClass = 'badge-success';
-            tipperData[currentTipper].serviceStatus = 'On Track';
-            
-            // Update last service date
-            tipperData[currentTipper].lastServiceDate = formatDate(new Date());
-            
-            // Calculate next service due date (assuming 2 months for demo)
-            const nextServiceDate = new Date();
-            nextServiceDate.setMonth(nextServiceDate.getMonth() + 2);
-            tipperData[currentTipper].nextServiceDue = formatDate(nextServiceDate);
-            
-            // Re-show the tipper to update display
-            showTipper(currentTipper);
-            
-            // Show success message
-            showModal('Service marked as complete! Maintenance records updated.');
-        }
-        
-        // Send notification
-        function sendNotification() {
-            const email = document.getElementById('notify-email').value;
-            const subject = document.getElementById('notify-subject').value;
-            const message = document.getElementById('notify-message').value;
-            
-            // In a real app, this would send an actual email
-            console.log(`Sending email to: ${email}`);
+            console.log(`Email Alert for ${tipper.name}:`);
+            console.log(`To: maintenance@sgxmineral.com, fleetmanager@sgxmineral.com`);
             console.log(`Subject: ${subject}`);
             console.log(`Message: ${message}`);
-            
-            // Show success message
-            showModal('Notification sent successfully to ' + email);
         }
         
-        // Show modal with message
-        function showModal(message) {
-            document.getElementById('modalMessage').textContent = message;
-            document.getElementById('notificationModal').style.display = 'flex';
-        }
-        
-        // Close modal
-        function closeModal() {
-            document.getElementById('notificationModal').style.display = 'none';
-        }
-        
-        // Format date as DD/MM/YYYY
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-        
-        // Handle form submissions
-        document.getElementById('addTipperForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const regNumber = this.querySelector('input[type="text"]').value;
-            const hmr = parseInt(this.querySelector('input[type="number"]:nth-child(1)').value);
-            const kmr = parseInt(this.querySelector('input[type="number"]:nth-child(2)').value);
-            
-            // Add new tipper to data
-            tipperData[regNumber] = {
-                title: regNumber,
-                status: 'On Track',
-                statusClass: 'badge-success',
-                currentHmr: hmr,
-                currentKmr: kmr,
-                lastServiceHmr: hmr - 100, // Demo: assume service was done 100H ago
-                serviceDue: '1000H Service',
-                serviceStatus: 'On Track',
-                dueInHours: 900, // Demo: 900 hours until next service
-                serviceItems: [
-                    'Engine Oil',
-                    'Engine Oil Filter',
-                    'Fuel Filter',
-                    'Engine Air Filter',
-                    'By-Pass Filter',
-                    'Return Line Filter',
-                    'Breather Element Filter',
-                    '2nd Air Filter',
-                    'Hydraulic Oil'
-                ],
-                serviceHistory: [
-                    {
-                        type: 'Initial Service',
-                        hmr: hmr - 100,
-                        date: formatDate(new Date()),
-                        items: [
-                            'Engine Oil',
-                            'Oil Filter',
-                            'Fuel Filter',
-                            'Air Filter'
-                        ]
-                    }
-                ],
-                lastServiceDate: formatDate(new Date()),
-                nextServiceDue: formatDate(new Date(new Date().setMonth(new Date().getMonth() + 2))),
-                operator: 'New Operator',
-                location: 'New Location'
-            };
-            
-            // Create new tipper item
-            const tipperList = document.querySelector('.tipper-list');
-            const newTipperItem = document.createElement('div');
-            newTipperItem.className = 'tipper-item';
-            newTipperItem.onclick = function() { showTipper(regNumber); };
-            newTipperItem.innerHTML = `
-                <div class="reg-number">${regNumber}</div>
-                <div class="current-hmr">HMR: ${hmr.toLocaleString()} | KMR: ${kmr.toLocaleString()}</div>
-                <small class="alert-success">On Track</small>
-            `;
-            
-            // Insert before the "Add New Tipper" section
-            tipperList.insertBefore(newTipperItem, tipperList.lastElementChild);
-            
-            // Reset form
-            this.reset();
-            
-            // Show success message
-            showModal(`New tipper ${regNumber} added successfully!`);
-        });
-        
-        // Initialize the first tipper as active
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date as default in update form
-            document.getElementById('update-service-date').valueAsDate = new Date();
-            
-            // Show first tipper as active by default
-            showTipper('SGX-MN-1001');
-        });
+        // Initialize display
+        window.onload = function() {
+            updateDisplay('AP39W027');
+            updateDisplay('AP39WO28');
+        };
     </script>
 </body>
 </html>
