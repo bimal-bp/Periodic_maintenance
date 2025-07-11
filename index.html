@@ -255,12 +255,11 @@
 <body>
     <header>
         <h1>SGX Mineral Tipper Maintenance</h1>
-        <p>Dual Service Interval Tracking with Automated Alerts</p>
     </header>
     
     <div class="container">
         <div class="tipper-container">
-            <!-- Tipper AP39W027 (Warning) -->
+            <!-- Tipper AP39W027 -->
             <div class="tipper-card" id="tipper-AP39W027">
                 <div class="tipper-header">
                     <div class="tipper-name">AP39W027</div>
@@ -274,21 +273,21 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last Updated KMR</div>
-                        <div class="stat-value" id="kmr-AP39W027">28,500</div>
+                        <div class="stat-value" id="kmr-AP39W027">23,456</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last 1000H Service</div>
-                        <div class="stat-value" id="last-1000h-AP39W027">3069</div>
+                        <div class="stat-value" id="last-1000h-AP39W027">3,092</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last 2000H Service</div>
-                        <div class="stat-value" id="last-2000h-AP39W027">2074</div>
+                        <div class="stat-value" id="last-2000h-AP39W027">2,069</div>
                     </div>
                 </div>
                 
                 <div class="alert-banner warning">
                     <span class="alert-icon">⚠️</span>
-                    <span>WARNING: 1000H Service due in 50 hours!</span>
+                    <span>WARNING: 2000H Service due in 119 hours!</span>
                 </div>
                 
                 <div class="update-section">
@@ -308,10 +307,10 @@
                 <div class="service-section">
                     <div class="service-header">
                         <span>1000H Service</span>
-                        <span>Next Due: 4,500 HMR</span>
+                        <span>Next Due: 4,092 HMR</span>
                     </div>
-                    <div class="countdown danger" id="countdown-1000h-AP39W027">
-                        Due in: 50 hours
+                    <div class="countdown normal" id="countdown-1000h-AP39W027">
+                        Due in: 858 hours
                     </div>
                     <div class="service-items">
                         <div class="service-item">Engine Oil Change</div>
@@ -325,10 +324,10 @@
                 <div class="service-section">
                     <div class="service-header">
                         <span>2000H Service</span>
-                        <span>Next Due: 5,000 HMR</span>
+                        <span>Next Due: 4,069 HMR</span>
                     </div>
-                    <div class="countdown normal" id="countdown-2000h-AP39W027">
-                        Due in: 1,050 hours
+                    <div class="countdown warning" id="countdown-2000h-AP39W027">
+                        Due in: 119 hours
                     </div>
                     <div class="service-items">
                         <div class="service-item">Transmission Oil Change</div>
@@ -339,7 +338,7 @@
                 </div>
             </div>
             
-            <!-- Tipper AP39WO28 (Overdue) -->
+            <!-- Tipper AP39WO28 -->
             <div class="tipper-card" id="tipper-AP39WO28">
                 <div class="tipper-header">
                     <div class="tipper-name">AP39WO28</div>
@@ -349,25 +348,25 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Last Updated HMR</div>
-                        <div class="stat-value" id="hmr-AP39WO28">7,050</div>
+                        <div class="stat-value" id="hmr-AP39WO28">4,253</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last Updated KMR</div>
-                        <div class="stat-value" id="kmr-AP39WO28">51,200</div>
+                        <div class="stat-value" id="kmr-AP39WO28">30,789</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last 1000H Service</div>
-                        <div class="stat-value" id="last-1000h-AP39WO28">6,500</div>
+                        <div class="stat-value" id="last-1000h-AP39WO28">3,853</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Last 2000H Service</div>
-                        <div class="stat-value" id="last-2000h-AP39WO28">5,000</div>
+                        <div class="stat-value" id="last-2000h-AP39WO28">2,753</div>
                     </div>
                 </div>
                 
                 <div class="alert-banner danger">
                     <span class="alert-icon">⚠️</span>
-                    <span>URGENT: 2000H Service overdue by 50 hours!</span>
+                    <span>URGENT: 1000H Service overdue by 47 hours!</span>
                 </div>
                 
                 <div class="email-notification" id="email-notification-AP39WO28">
@@ -391,10 +390,10 @@
                 <div class="service-section">
                     <div class="service-header">
                         <span>1000H Service</span>
-                        <span>Next Due: 7,500 HMR</span>
+                        <span>Next Due: 4,853 HMR</span>
                     </div>
-                    <div class="countdown normal" id="countdown-1000h-AP39WO28">
-                        Due in: 450 hours
+                    <div class="countdown danger" id="countdown-1000h-AP39WO28">
+                        OVERDUE by 47 hours
                     </div>
                     <div class="service-items">
                         <div class="service-item">Engine Oil Change</div>
@@ -408,10 +407,10 @@
                 <div class="service-section">
                     <div class="service-header">
                         <span>2000H Service</span>
-                        <span>Next Due: 7,000 HMR</span>
+                        <span>Next Due: 4,753 HMR</span>
                     </div>
-                    <div class="countdown danger" id="countdown-2000h-AP39WO28">
-                        OVERDUE by 50 hours
+                    <div class="countdown normal" id="countdown-2000h-AP39WO28">
+                        Due in: 500 hours
                     </div>
                     <div class="service-items">
                         <div class="service-item">Transmission Oil Change</div>
@@ -430,22 +429,22 @@
             'AP39W027': {
                 name: 'AP39W027',
                 currentHmr: 3950,
-                currentKmr: 28500,
-                last1000hService: 3500,
-                last2000hService: 3000,
-                next1000hDue: 4500,
-                next2000hDue: 5000,
+                currentKmr: 23456,
+                last1000hService: 3092,
+                last2000hService: 2069,
+                next1000hDue: 4092,  // 3092 + 1000
+                next2000hDue: 4069,   // 2069 + 2000
                 lastUpdateDate: '18/07/2023',
-                emailSent: true
+                emailSent: false
             },
             'AP39WO28': {
                 name: 'AP39WO28',
-                currentHmr: 7050,
-                currentKmr: 51200,
-                last1000hService: 6500,
-                last2000hService: 5000,
-                next1000hDue: 7500,
-                next2000hDue: 7000,
+                currentHmr: 4253,
+                currentKmr: 30789,
+                last1000hService: 3853,
+                last2000hService: 2753,
+                next1000hDue: 4853,  // 3853 + 1000
+                next2000hDue: 4753,   // 2753 + 2000
                 lastUpdateDate: '15/07/2023',
                 emailSent: true
             }
@@ -484,6 +483,8 @@
             // Update basic stats
             document.getElementById(`hmr-${id}`).textContent = tipper.currentHmr.toLocaleString();
             document.getElementById(`kmr-${id}`).textContent = tipper.currentKmr.toLocaleString();
+            document.getElementById(`last-1000h-${id}`).textContent = tipper.last1000hService.toLocaleString();
+            document.getElementById(`last-2000h-${id}`).textContent = tipper.last2000hService.toLocaleString();
             
             // Calculate hours remaining/overdue for both services
             const hoursTo1000h = tipper.next1000hDue - tipper.currentHmr;
@@ -492,6 +493,7 @@
             // Determine overall status
             let overallStatus = 'green';
             let alertMessage = '';
+            let showAlert = false;
             
             // Update 1000H service display
             updateServiceDisplay(id, '1000h', hoursTo1000h, tipper.next1000hDue);
@@ -502,15 +504,18 @@
             // Set overall status based on most urgent service
             if (hoursTo1000h <= 0 || hoursTo2000h <= 0) {
                 overallStatus = 'red';
+                showAlert = true;
                 const overdueService = hoursTo1000h <= 0 ? '1000H' : '2000H';
                 const overdueHours = Math.abs(hoursTo1000h <= 0 ? hoursTo1000h : hoursTo2000h);
                 alertMessage = `URGENT: ${overdueService} Service overdue by ${overdueHours} hours!`;
             } else if (hoursTo1000h <= 50 || hoursTo2000h <= 50) {
                 overallStatus = 'red';
+                showAlert = true;
                 const dueService = hoursTo1000h <= 50 ? '1000H' : '2000H';
                 alertMessage = `URGENT: ${dueService} Service due in ${hoursTo1000h <= 50 ? hoursTo1000h : hoursTo2000h} hours!`;
             } else if (hoursTo1000h <= 100 || hoursTo2000h <= 100) {
                 overallStatus = 'yellow';
+                showAlert = true;
                 const dueService = hoursTo1000h <= 100 ? '1000H' : '2000H';
                 alertMessage = `WARNING: ${dueService} Service due in ${hoursTo1000h <= 100 ? hoursTo1000h : hoursTo2000h} hours`;
             }
@@ -521,22 +526,34 @@
             
             if (overallStatus === 'green') {
                 statusElement.textContent = 'ON TRACK';
+                document.querySelector(`#tipper-${id} .alert-banner`).style.display = 'none';
             } else if (overallStatus === 'yellow') {
                 statusElement.textContent = 'DUE SOON';
+                document.querySelector(`#tipper-${id} .alert-banner`).style.display = 'flex';
+                document.querySelector(`#tipper-${id} .alert-banner`).className = 'alert-banner warning';
+                document.querySelector(`#tipper-${id} .alert-banner span:last-child`).textContent = alertMessage;
             } else {
                 statusElement.textContent = 'OVERDUE';
+                document.querySelector(`#tipper-${id} .alert-banner`).style.display = 'flex';
+                document.querySelector(`#tipper-${id} .alert-banner`).className = 'alert-banner danger';
+                document.querySelector(`#tipper-${id} .alert-banner span:last-child`).textContent = alertMessage;
             }
             
             // Show email notification if sent
             if (tipper.emailSent) {
                 document.getElementById(`email-notification-${id}`).style.display = 'block';
+            } else {
+                document.getElementById(`email-notification-${id}`).style.display = 'none';
             }
         }
         
         // Update service display
         function updateServiceDisplay(id, serviceType, hoursRemaining, nextDueAt) {
             const countdownElement = document.getElementById(`countdown-${serviceType}-${id}`);
-            const serviceName = serviceType === '1000h' ? '1000H' : '2000H';
+            const serviceHeaderElement = document.querySelector(`#tipper-${id} .service-section:nth-of-type(${serviceType === '1000h' ? 1 : 2}) .service-header span:last-child`);
+            
+            // Update next due in header
+            serviceHeaderElement.textContent = `Next Due: ${nextDueAt.toLocaleString()} HMR`;
             
             if (hoursRemaining <= 0) {
                 // Overdue
@@ -565,8 +582,8 @@
             const hoursTo2000h = tipper.next2000hDue - tipper.currentHmr;
             
             // Check if we need to send email alerts
-            if (hoursTo1000h <= 0 || hoursTo2000h <= 0 || 
-                hoursTo1000h <= 100 || hoursTo2000h <= 100) {
+            if ((hoursTo1000h <= 0 || hoursTo2000h <= 0 || 
+                hoursTo1000h <= 100 || hoursTo2000h <= 100) && !tipper.emailSent) {
                 sendEmailAlert(id, hoursTo1000h, hoursTo2000h);
                 tipper.emailSent = true;
                 document.getElementById(`email-notification-${id}`).style.display = 'block';
