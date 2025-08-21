@@ -1,636 +1,925 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGX Mineral Tipper Maintenance</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #e74c3c;
-            --warning: #f39c12;
-            --success: #27ae60;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .tipper-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .tipper-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 25px;
-            position: relative;
-        }
-        
-        .tipper-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .tipper-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .status {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-        }
-        
-        .status.green {
-            background-color: var(--success);
-        }
-        
-        .status.yellow {
-            background-color: var(--warning);
-        }
-        
-        .status.red {
-            background-color: var(--secondary);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: #f9f9f9;
-            padding: 12px;
-            border-radius: 6px;
-        }
-        
-        .stat-value {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 5px 0;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .update-section {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .service-section {
-            margin: 25px 0 15px;
-        }
-        
-        .service-header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--primary);
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .countdown {
-            font-size: 17px;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .countdown.normal {
-            background-color: #e8f5e9;
-            color: var(--success);
-            border-left: 5px solid var(--success);
-        }
-        
-        .countdown.warning {
-            background-color: #fff8e1;
-            color: var(--warning);
-            border-left: 5px solid var(--warning);
-        }
-        
-        .countdown.danger {
-            background-color: #ffebee;
-            color: var(--secondary);
-            border-left: 5px solid var(--secondary);
-        }
-        
-        .service-items {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .service-item {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
-            border-left: 3px solid var(--primary);
-            font-size: 14px;
-        }
-        
-        .alert-banner {
-            padding: 15px;
-            border-radius: 6px;
-            margin: 15px 0;
-            text-align: center;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .alert-banner.warning {
-            background-color: #fff3e0;
-            color: var(--warning);
-            border: 1px solid var(--warning);
-        }
-        
-        .alert-banner.danger {
-            background-color: #ffebee;
-            color: var(--secondary);
-            border: 1px solid var(--secondary);
-        }
-        
-        .alert-icon {
-            margin-right: 10px;
-            font-size: 20px;
-        }
-        
-        .email-notification {
-            background-color: #e3f2fd;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 14px;
-            display: none;
-        }
-        
-        @media (max-width: 768px) {
-            .tipper-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid, .service-items {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Equipment Maintenance Tracker</title>
+ <style>
+ :root {
+ --primary: #2c3e50;
+ --secondary: #3498db;
+ --success: #28a745;
+ --warning: #ffc107;
+ --danger: #dc3545;
+ --light: #f8f9fa;
+ --dark: #343a40;
+ }
+ body {
+ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ margin: 0;
+ padding: 0;
+ background-color: #f5f5f5;
+ }
+ .container {
+ max-width: 1400px;
+ margin: 0 auto;
+ background: white;
+ border-radius: 8px;
+ box-shadow: 0 0 20px rgba(0,0,0,0.1);
+ padding: 20px;
+ position: relative;
+ }
+ h1, h2, h3 {
+ color: var(--primary);
+ text-align: center;
+ }
+ h1 {
+ margin-bottom: 30px;
+ padding-bottom: 15px;
+ border-bottom: 2px solid var(--secondary);
+ }
+ .home-container {
+ text-align: center;
+ padding: 50px 20px;
+ }
+ .equipment-list {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 30px;
+ margin-top: 40px;
+ }
+ .equipment-card {
+ background: white;
+ border-radius: 8px;
+ box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+ padding: 20px;
+ width: 300px;
+ transition: transform 0.3s;
+ }
+ .equipment-card:hover {
+ transform: translateY(-5px);
+ }
+ .card-header {
+ background-color: var(--primary);
+ color: white;
+ padding: 10px;
+ border-radius: 5px 5px 0 0;
+ margin: -20px -20px 20px -20px;
+ }
+ .card-body {
+ text-align: left;
+ }
+ .equipment-item {
+ margin-bottom: 10px;
+ padding-bottom: 10px;
+ border-bottom: 1px solid #eee;
+ }
+ .main-btn {
+ display: inline-block;
+ margin-top: 30px;
+ padding: 12px 24px;
+ background-color: var(--secondary);
+ color: white;
+ text-decoration: none;
+ border-radius: 4px;
+ font-size: 18px;
+ transition: background-color 0.3s;
+ }
+ .main-btn:hover {
+ background-color: #2980b9;
+ }
+ .status-btn {
+ display: inline-block;
+ margin: 10px;
+ padding: 10px 20px;
+ color: white;
+ text-decoration: none;
+ border-radius: 4px;
+ font-size: 16px;
+ transition: background-color 0.3s;
+ cursor: pointer;
+ }
+ .warning-btn {
+ background-color: var(--warning);
+ color: var(--dark);
+ }
+ .warning-btn:hover {
+ background-color: #e0a800;
+ }
+ .mail-sent-btn {
+ background-color: var(--danger);
+ }
+ .mail-sent-btn:hover {
+ background-color: #c82333;
+ }
+ .controls {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 20px;
+ flex-wrap: wrap;
+ gap: 15px;
+ }
+ .search-box {
+ flex: 1;
+ min-width: 250px;
+ }
+ .filter-group {
+ display: flex;
+ gap: 15px;
+ align-items: center;
+ }
+ select, input {
+ padding: 8px 12px;
+ border: 1px solid #ddd;
+ border-radius: 4px;
+ font-size: 14px;
+ }
+ button {
+ padding: 8px 16px;
+ background-color: var(--secondary);
+ color: white;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ transition: background-color 0.3s;
+ }
+ button:hover {
+ background-color: #2980b9;
+ }
+ .floating-btn {
+ position: fixed;
+ bottom: 30px;
+ right: 30px;
+ width: 60px;
+ height: 60px;
+ border-radius: 50%;
+ background-color: var(--secondary);
+ color: white;
+ font-size: 24px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ cursor: pointer;
+ box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+ z-index: 100;
+ transition: all 0.3s;
+ }
+ .floating-btn:hover {
+ background-color: #2980b9;
+ transform: scale(1.1);
+ }
+ table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 20px;
+ }
+ th, td {
+ padding: 12px 15px;
+ text-align: center;
+ border: 1px solid #ddd;
+ }
+ th {
+ background-color: var(--primary);
+ color: white;
+ position: sticky;
+ top: 0;
+ }
+ .service-header {
+ background-color: var(--secondary);
+ color: white;
+ }
+ tr:nth-child(even) {
+ background-color: #f2f2f2;
+ }
+ tr:hover {
+ background-color: #e9e9e9;
+ }
+ .status-ok {
+ background-color: var(--success);
+ color: white;
+ font-weight: bold;
+ padding: 4px 8px;
+ border-radius: 4px;
+ }
+ .status-warning {
+ background-color: var(--warning);
+ color: var(--dark);
+ font-weight: bold;
+ padding: 4px 8px;
+ border-radius: 4px;
+ }
+ .status-action {
+ background-color: var(--danger);
+ color: white;
+ font-weight: bold;
+ padding: 4px 8px;
+ border-radius: 4px;
+ }
+ .footer {
+ margin-top: 30px;
+ text-align: center;
+ color: #666;
+ font-size: 14px;
+ }
+ .back-btn {
+ display: inline-block;
+ margin-bottom: 20px;
+ padding: 8px 16px;
+ background-color: var(--primary);
+ color: white;
+ text-decoration: none;
+ border-radius: 4px;
+ }
+ .form-container {
+ max-width: 800px;
+ margin: 20px auto;
+ padding: 20px;
+ background: white;
+ border-radius: 8px;
+ box-shadow: 0 0 10px rgba(0,0,0,0.1);
+ }
+ .form-group {
+ margin-bottom: 15px;
+ }
+ .form-group label {
+ display: block;
+ margin-bottom: 5px;
+ font-weight: bold;
+ }
+ .form-group input {
+ width: 100%;
+ padding: 8px;
+ border: 1px solid #ddd;
+ border-radius: 4px;
+ }
+ .form-section {
+ margin-bottom: 25px;
+ padding-bottom: 15px;
+ border-bottom: 1px solid #eee;
+ }
+ .form-section h3 {
+ text-align: left;
+ margin-bottom: 15px;
+ color: var(--secondary);
+ }
+ .form-actions {
+ display: flex;
+ justify-content: flex-end;
+ gap: 10px;
+ margin-top: 20px;
+ }
+ .btn-secondary {
+ background-color: #6c757d;
+ }
+ .btn-secondary:hover {
+ background-color: #5a6268;
+ }
+ .btn-danger {
+ background-color: var(--danger);
+ }
+ .btn-danger:hover {
+ background-color: #c82333;
+ }
+ .modal {
+ display: none;
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background-color: rgba(0,0,0,0.5);
+ z-index: 1000;
+ align-items: center;
+ justify-content: center;
+ }
+ .modal-content {
+ background-color: white;
+ padding: 20px;
+ border-radius: 8px;
+ width: 90%;
+ max-width: 500px;
+ box-shadow: 0 0 20px rgba(0,0,0,0.2);
+ }
+ .modal-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 20px;
+ }
+ .close {
+ font-size: 24px;
+ cursor: pointer;
+ }
+ .action-buttons {
+ display: flex;
+ gap: 10px;
+ margin-top: 20px;
+ }
+ @media (max-width: 768px) {
+ .controls {
+ flex-direction: column;
+ }
+ table {
+ display: block;
+ overflow-x: auto;
+ }
+ .equipment-card {
+ width: 100%;
+ }
+ }
+ </style>
 </head>
 <body>
-    <header>
-        <h1>SGX Mineral Tipper Maintenance</h1>
-    </header>
-    
-    <div class="container">
-        <div class="tipper-container">
-            <!-- Tipper AP39W027 -->
-            <div class="tipper-card" id="tipper-AP39W027">
-                <div class="tipper-header">
-                    <div class="tipper-name">AP39W027</div>
-                    <div class="status yellow" id="status-AP39W027">DUE SOON</div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Last Updated HMR</div>
-                        <div class="stat-value" id="hmr-AP39W027">3,950</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Last Updated KMR</div>
-                        <div class="stat-value" id="kmr-AP39W027">23,456</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Last 1000H Service</div>
-                        <div class="stat-value" id="last-1000h-AP39W027">3,092</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Last 2000H Service</div>
-                        <div class="stat-value" id="last-2000h-AP39W027">2,069</div>
-                    </div>
-                </div>
-                
-                <div class="update-section">
-                    <h3>Daily Update</h3>
-                    <div class="form-group">
-                        <label>Today's HMR</label>
-                        <input type="number" id="today-hmr-AP39W027" placeholder="Enter current HMR">
-                    </div>
-                    <div class="form-group">
-                        <label>Today's KMR</label>
-                        <input type="number" id="today-kmr-AP39W027" placeholder="Enter current KMR">
-                    </div>
-                    <button class="btn btn-primary" onclick="updateTipper('AP39W027')">Update</button>
-                </div>
-                
-                <!-- 1000H Service Section -->
-                <div class="service-section">
-                    <div class="service-header">
-                        <span>1000H Service</span>
-                        <span>Next Due: 4,092 HMR</span>
-                    </div>
-                    <div class="countdown normal" id="countdown-1000h-AP39W027">
-                        Due in: 858 hours
-                    </div>
-                    <div class="service-items">
-                        <div class="service-item">Engine Oil Change</div>
-                        <div class="service-item">Oil Filter Replacement</div>
-                        <div class="service-item">Fuel Filter Change</div>
-                        <div class="service-item">Air Filter Cleaning</div>
-                    </div>
-                </div>
-                
-                <!-- 2000H Service Section -->
-                <div class="service-section">
-                    <div class="service-header">
-                        <span>2000H Service</span>
-                        <span>Next Due: 4,069 HMR</span>
-                    </div>
-                    <div class="countdown warning" id="countdown-2000h-AP39W027">
-                        Due in: 119 hours
-                    </div>
-                    <div class="service-items">
-                        <div class="service-item">Transmission Oil Change</div>
-                        <div class="service-item">Differential Oil Change</div>
-                        <div class="service-item">Brake System Inspection</div>
-                        <div class="service-item">Coolant Replacement</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tipper AP39WO28 -->
-            <div class="tipper-card" id="tipper-AP39WO28">
-                <div class="tipper-header">
-                    <div class="tipper-name">AP39WO28</div>
-                    <div class="status red" id="status-AP39WO28">OVERDUE</div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Last Updated HMR</div>
-                        <div class="stat-value" id="hmr-AP39WO28">4806</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Last Updated KMR</div>
-                        <div class="stat-value" id="kmr-AP39WO28">30,789</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Last 1000H Service</div>
-                        <div class="stat-value" id="last-1000h-AP39WO28">3,853</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Last 2000H Service</div>
-                        <div class="stat-value" id="last-2000h-AP39WO28">3153</div>
-                    </div>
-                </div>
-                
-                <div class="alert-banner danger">
-                    <span class="alert-icon">⚠️</span>
-                    <span>URGENT: 1000H Service overdue by 47 hours! Mail has sent to Maintenance Team and management </span>
-                </div>
-                
-                <div class="email-notification" id="email-notification-AP39WO28">
-                    <strong>Email Sent:</strong> Maintenance team notified about overdue service
-                </div>
-                
-                <div class="update-section">
-                    <h3>Daily Update</h3>
-                    <div class="form-group">
-                        <label>Today's HMR</label>
-                        <input type="number" id="today-hmr-AP39WO28" placeholder="Enter current HMR">
-                    </div>
-                    <div class="form-group">
-                        <label>Today's KMR</label>
-                        <input type="number" id="today-kmr-AP39WO28" placeholder="Enter current KMR">
-                    </div>
-                    <button class="btn btn-primary" onclick="updateTipper('AP39WO28')">Update</button>
-                </div>
-                
-                <!-- 1000H Service Section -->
-                <div class="service-section">
-                    <div class="service-header">
-                        <span>1000H Service</span>
-                        <span>Next Due: 4,853 HMR</span>
-                    </div>
-                    <div class="countdown danger" id="countdown-1000h-AP39WO28">
-                        OVERDUE by 47 hours
-                    </div>
-                    <div class="service-items">
-                        <div class="service-item">Engine Oil Change</div>
-                        <div class="service-item">Oil Filter Replacement</div>
-                        <div class="service-item">Fuel Filter Change</div>
-                        <div class="service-item">Air Filter Cleaning</div>
-                    </div>
-                </div>
-                
-                <!-- 2000H Service Section -->
-                <div class="service-section">
-                    <div class="service-header">
-                        <span>2000H Service</span>
-                        <span>Next Due: 5,153 HMR</span>
-                    </div>
-                    <div class="countdown normal" id="countdown-2000h-AP39WO28">
-                        Due in: 347hours
-                    </div>
-                    <div class="service-items">
-                        <div class="service-item">Transmission Oil Change</div>
-                        <div class="service-item">Differential Oil Change</div>
-                        <div class="service-item">Brake System Inspection</div>
-                        <div class="service-item">Coolant Replacement</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Tipper data
-        const tippers = {
-            'AP39W027': {
-                name: 'AP39W027',
-                currentHmr: 3950,
-                currentKmr: 23456,
-                last1000hService: 3092,
-                last2000hService: 2069,
-                next1000hDue: 4092,  // 3092 + 1000
-                next2000hDue: 4069,   // 2069 + 2000
-                lastUpdateDate: '18/07/2023',
-                emailSent: false
-            },
-            'AP39WO28': {
-                name: 'AP39WO28',
-                currentHmr: 4253,
-                currentKmr: 30789,
-                last1000hService: 3853,
-                last2000hService: 2753,
-                next1000hDue: 4853,  // 3853 + 1000
-                next2000hDue: 4753,   // 2753 + 2000
-                lastUpdateDate: '15/07/2023',
-                emailSent: true
-            }
-        };
-        
-        // Update tipper data and display
-        function updateTipper(id) {
-            const todayHmr = parseInt(document.getElementById(`today-hmr-${id}`).value);
-            const todayKmr = parseInt(document.getElementById(`today-kmr-${id}`).value);
-            
-            if (isNaN(todayHmr)) {
-                alert('Please enter valid HMR reading');
-                return;
-            }
-            
-            // Update tipper data
-            tippers[id].currentHmr = todayHmr;
-            tippers[id].currentKmr = todayKmr || tippers[id].currentKmr;
-            tippers[id].lastUpdateDate = new Date().toLocaleDateString('en-GB');
-            
-            // Update display
-            updateDisplay(id);
-            
-            // Check for service due and send alerts
-            checkServiceStatus(id);
-            
-            // Clear form
-            document.getElementById(`today-hmr-${id}`).value = '';
-            document.getElementById(`today-kmr-${id}`).value = '';
-        }
-        
-        // Update the display for a tipper
-        function updateDisplay(id) {
-            const tipper = tippers[id];
-            
-            // Update basic stats
-            document.getElementById(`hmr-${id}`).textContent = tipper.currentHmr.toLocaleString();
-            document.getElementById(`kmr-${id}`).textContent = tipper.currentKmr.toLocaleString();
-            document.getElementById(`last-1000h-${id}`).textContent = tipper.last1000hService.toLocaleString();
-            document.getElementById(`last-2000h-${id}`).textContent = tipper.last2000hService.toLocaleString();
-            
-            // Calculate hours remaining/overdue for both services
-            const hoursTo1000h = tipper.next1000hDue - tipper.currentHmr;
-            const hoursTo2000h = tipper.next2000hDue - tipper.currentHmr;
-            
-            // Determine overall status
-            let overallStatus = 'green';
-            let alertMessage = '';
-            let showAlert = false;
-            
-            // Update 1000H service display
-            updateServiceDisplay(id, '1000h', hoursTo1000h, tipper.next1000hDue);
-            
-            // Update 2000H service display
-            updateServiceDisplay(id, '2000h', hoursTo2000h, tipper.next2000hDue);
-            
-            // Set overall status based on most urgent service
-            if (hoursTo1000h <= 0 || hoursTo2000h <= 0) {
-                overallStatus = 'red';
-                showAlert = true;
-                const overdueService = hoursTo1000h <= 0 ? '1000H' : '2000H';
-                const overdueHours = Math.abs(hoursTo1000h <= 0 ? hoursTo1000h : hoursTo2000h);
-                alertMessage = `URGENT: ${overdueService} Service overdue by ${overdueHours} hours!`;
-            } else if (hoursTo1000h <= 50 || hoursTo2000h <= 50) {
-                overallStatus = 'red';
-                showAlert = true;
-                const dueService = hoursTo1000h <= 50 ? '1000H' : '2000H';
-                alertMessage = `URGENT: ${dueService} Service due in ${hoursTo1000h <= 50 ? hoursTo1000h : hoursTo2000h} hours!`;
-            } else if (hoursTo1000h <= 100 || hoursTo2000h <= 100) {
-                overallStatus = 'yellow';
-                showAlert = true;
-                const dueService = hoursTo1000h <= 100 ? '1000H' : '2000H';
-                alertMessage = `WARNING: ${dueService} Service due in ${hoursTo1000h <= 100 ? hoursTo1000h : hoursTo2000h} hours`;
-            }
-            
-            // Update status badge
-            const statusElement = document.getElementById(`status-${id}`);
-            statusElement.className = `status ${overallStatus}`;
-            
-            if (overallStatus === 'green') {
-                statusElement.textContent = 'ON TRACK';
-                document.querySelector(`#tipper-${id} .alert-banner`).style.display = 'none';
-            } else if (overallStatus === 'yellow') {
-                statusElement.textContent = 'DUE SOON';
-                document.querySelector(`#tipper-${id} .alert-banner`).style.display = 'flex';
-                document.querySelector(`#tipper-${id} .alert-banner`).className = 'alert-banner warning';
-                document.querySelector(`#tipper-${id} .alert-banner span:last-child`).textContent = alertMessage;
-            } else {
-                statusElement.textContent = 'OVERDUE';
-                document.querySelector(`#tipper-${id} .alert-banner`).style.display = 'flex';
-                document.querySelector(`#tipper-${id} .alert-banner`).className = 'alert-banner danger';
-                document.querySelector(`#tipper-${id} .alert-banner span:last-child`).textContent = alertMessage;
-            }
-            
-            // Show email notification if sent
-            if (tipper.emailSent) {
-                document.getElementById(`email-notification-${id}`).style.display = 'block';
-            } else {
-                document.getElementById(`email-notification-${id}`).style.display = 'none';
-            }
-        }
-        
-        // Update service display
-        function updateServiceDisplay(id, serviceType, hoursRemaining, nextDueAt) {
-            const countdownElement = document.getElementById(`countdown-${serviceType}-${id}`);
-            const serviceHeaderElement = document.querySelector(`#tipper-${id} .service-section:nth-of-type(${serviceType === '1000h' ? 1 : 2}) .service-header span:last-child`);
-            
-            // Update next due in header
-            serviceHeaderElement.textContent = `Next Due: ${nextDueAt.toLocaleString()} HMR`;
-            
-            if (hoursRemaining <= 0) {
-                // Overdue
-                const overdueHours = Math.abs(hoursRemaining);
-                countdownElement.textContent = `OVERDUE by ${overdueHours} hours`;
-                countdownElement.className = 'countdown danger';
-            } else if (hoursRemaining <= 50) {
-                // Due immediately (0-50 hours)
-                countdownElement.textContent = `Due in ${hoursRemaining} hours`;
-                countdownElement.className = 'countdown danger';
-            } else if (hoursRemaining <= 100) {
-                // Warning (50-100 hours)
-                countdownElement.textContent = `Due in ${hoursRemaining} hours`;
-                countdownElement.className = 'countdown warning';
-            } else {
-                // Normal (>100 hours)
-                countdownElement.textContent = `Due in ${hoursRemaining} hours`;
-                countdownElement.className = 'countdown normal';
-            }
-        }
-        
-        // Check service status and send alerts
-        function checkServiceStatus(id) {
-            const tipper = tippers[id];
-            const hoursTo1000h = tipper.next1000hDue - tipper.currentHmr;
-            const hoursTo2000h = tipper.next2000hDue - tipper.currentHmr;
-            
-            // Check if we need to send email alerts
-            if ((hoursTo1000h <= 0 || hoursTo2000h <= 0 || 
-                hoursTo1000h <= 100 || hoursTo2000h <= 100) && !tipper.emailSent) {
-                sendEmailAlert(id, hoursTo1000h, hoursTo2000h);
-                tipper.emailSent = true;
-                document.getElementById(`email-notification-${id}`).style.display = 'block';
-            }
-        }
-        
-        // Send email alert
-        function sendEmailAlert(id, hoursTo1000h, hoursTo2000h) {
-            const tipper = tippers[id];
-            let subject = '';
-            let message = '';
-            
-            if (hoursTo1000h <= 0 || hoursTo2000h <= 0) {
-                // Overdue alert
-                const overdueService = hoursTo1000h <= 0 ? '1000H' : '2000H';
-                const overdueHours = Math.abs(hoursTo1000h <= 0 ? hoursTo1000h : hoursTo2000h);
-                subject = `URGENT: ${tipper.name} ${overdueService} Service OVERDUE`;
-                message = `Vehicle ${tipper.name} is overdue for ${overdueService} service by ${overdueHours} hours.\n\n` +
-                          `Current HMR: ${tipper.currentHmr}\n` +
-                          `${overdueService} Service was due at: ${hoursTo1000h <= 0 ? tipper.next1000hDue : tipper.next2000hDue} HMR\n\n` +
-                          `Please service immediately to avoid equipment damage.`;
-            } else if (hoursTo1000h <= 50 || hoursTo2000h <= 50) {
-                // Due immediately alert
-                const dueService = hoursTo1000h <= 50 ? '1000H' : '2000H';
-                const dueHours = hoursTo1000h <= 50 ? hoursTo1000h : hoursTo2000h;
-                subject = `URGENT: ${tipper.name} ${dueService} Service Due Soon`;
-                message = `Vehicle ${tipper.name} needs ${dueService} service in ${dueHours} hours.\n\n` +
-                          `Current HMR: ${tipper.currentHmr}\n` +
-                          `${dueService} Service due at: ${hoursTo1000h <= 50 ? tipper.next1000hDue : tipper.next2000hDue} HMR\n\n` +
-                          `Please schedule this service immediately.`;
-            } else if (hoursTo1000h <= 100 || hoursTo2000h <= 100) {
-                // Warning alert
-                const dueService = hoursTo1000h <= 100 ? '1000H' : '2000H';
-                const dueHours = hoursTo1000h <= 100 ? hoursTo1000h : hoursTo2000h;
-                subject = `WARNING: ${tipper.name} ${dueService} Service Approaching`;
-                message = `Vehicle ${tipper.name} will need ${dueService} service in ${dueHours} hours.\n\n` +
-                          `Current HMR: ${tipper.currentHmr}\n` +
-                          `${dueService} Service due at: ${hoursTo1000h <= 100 ? tipper.next1000hDue : tipper.next2000hDue} HMR\n\n` +
-                          `Please plan for this upcoming service.`;
-            }
-            
-            console.log(`Email Alert for ${tipper.name}:`);
-            console.log(`To: maintenance@sgxmineral.com, fleetmanager@sgxmineral.com`);
-            console.log(`Subject: ${subject}`);
-            console.log(`Message: ${message}`);
-        }
-        
-        // Initialize display
-        window.onload = function() {
-            updateDisplay('AP39W027');
-            updateDisplay('AP39WO28');
-        };
-    </script>
+ <!-- Home Page -->
+ <div id="homePage" class="container home-container">
+ <h1>Equipment Management System</h1>
+ <h2>Equipment Status Summary</h2>
+ <div class="equipment-list">
+ <div class="equipment-card">
+ <div class="card-header">
+ <h3>Mail Sent Equipment</h3>
+ </div>
+ <div class="card-body" id="mailSentTippers">
+ </div>
+ </div>
+ <div class="equipment-card">
+ <div class="card-header">
+ <h3>Warning Equipment</h3>
+ </div>
+ <div class="card-body" id="warningTippers">
+ </div>
+ </div>
+ </div>
+ <div class="action-buttons">
+ <a href="#" class="main-btn" onclick="showMaintenancePage()">View Maintenance Schedule</a>
+ <a href="#" class="main-btn" onclick="showAddEquipmentPage()">Add New Equipment</a>
+ </div>
+ <div class="footer">
+ <p>© 2025 Equipment Management System</p>
+ </div>
+ </div>
+
+ <!-- Maintenance Page (initially hidden) -->
+ <div id="maintenancePage" class="container" style="display: none;">
+ <a href="#" class="back-btn" onclick="showHomePage()">← Back to Home</a>
+ <h1>Equipment Maintenance Tracker</h1>
+ <div class="controls">
+ <div class="search-box">
+ <input type="text" id="searchInput" placeholder="Search equipment..." onkeyup="searchTable()">
+ </div>
+ <div class="filter-group">
+ <select id="statusFilter" onchange="filterTable()">
+ <option value="">All Status</option>
+ <option value="ok">OK</option>
+ <option value="warning">Warning</option>
+ <option value="action">Action Required</option>
+ </select>
+ <select id="equipmentFilter" onchange="filterTable()">
+ <option value="">All Equipment</option>
+ <option value="Tipper">Tippers</option>
+ <option value="Excavator">Excavators</option>
+ <option value="Loader">Loaders</option>
+ </select>
+ <button onclick="exportToExcel()">Export to Excel</button>
+ <button onclick="showAddEquipmentPage()">Add Equipment</button>
+ </div>
+ </div>
+ <table id="maintenanceTable">
+ <thead>
+ <tr>
+ <th rowspan="2">Equipment ID</th>
+ <th rowspan="2">Type</th>
+ <th rowspan="2">Current HMR</th>
+ <th colspan="5" class="service-header">500 hr Service</th>
+ <th colspan="5" class="service-header">1000 hr Service</th>
+ <th colspan="5" class="service-header">2000 hr Service</th>
+ <th rowspan="2">Actions</th>
+ </tr>
+ <tr>
+ <!-- 500 hr sub-headers -->
+ <th class="service-header">Previous</th>
+ <th class="service-header">Last Date</th>
+ <th class="service-header">Next Due</th>
+ <th class="service-header">HMR Left</th>
+ <th class="service-header">Status</th>
+ <!-- 1000 hr sub-headers -->
+ <th class="service-header">Previous</th>
+ <th class="service-header">Last Date</th>
+ <th class="service-header">Next Due</th>
+ <th class="service-header">HMR Left</th>
+ <th class="service-header">Status</th>
+ <!-- 2000 hr sub-headers -->
+ <th class="service-header">Previous</th>
+ <th class="service-header">Last Date</th>
+ <th class="service-header">Next Due</th>
+ <th class="service-header">HMR Left</th>
+ <th class="service-header">Status</th>
+ </tr>
+ </thead>
+ <tbody id="equipmentTableBody">
+ <!-- Equipment data will be populated here -->
+ </tbody>
+ </table>
+ <div class="footer">
+ <p>Last Updated: <span id="lastUpdated">2025-08-11 16:11:00</span></p>
+ <p>© 2025 Equipment Management System</p>
+ </div>
+ </div>
+
+ <!-- Add Equipment Page -->
+ <div id="addEquipmentPage" class="container" style="display: none;">
+ <a href="#" class="back-btn" onclick="showMaintenancePage()">← Back to Maintenance</a>
+ <h1>Add New Equipment</h1>
+ <div class="form-container">
+ <form id="equipmentForm">
+ <div class="form-group">
+ <label for="equipmentId">Equipment ID</label>
+ <input type="text" id="equipmentId" required>
+ </div>
+ <div class="form-group">
+ <label for="equipmentType">Equipment Type</label>
+ <select id="equipmentType" required>
+ <option value="Tipper">Tipper</option>
+ <option value="Excavator">Excavator</option>
+ <option value="Loader">Loader</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label for="currentHmr">Current HMR</label>
+ <input type="number" id="currentHmr" required>
+ </div>
+
+ <div class="form-section">
+ <h3>500 Hour Service Details</h3>
+ <div class="form-group">
+ <label for="service500Previous">Previous Service HMR</label>
+ <input type="number" id="service500Previous">
+ </div>
+ <div class="form-group">
+ <label for="service500LastDate">Last Service Date</label>
+ <input type="date" id="service500LastDate">
+ </div>
+ </div>
+
+ <div class="form-section">
+ <h3>1000 Hour Service Details</h3>
+ <div class="form-group">
+ <label for="service1000Previous">Previous Service HMR</label>
+ <input type="number" id="service1000Previous">
+ </div>
+ <div class="form-group">
+ <label for="service1000LastDate">Last Service Date</label>
+ <input type="date" id="service1000LastDate">
+ </div>
+ </div>
+
+ <div class="form-section">
+ <h3>2000 Hour Service Details</h3>
+ <div class="form-group">
+ <label for="service2000Previous">Previous Service HMR</label>
+ <input type="number" id="service2000Previous">
+ </div>
+ <div class="form-group">
+ <label for="service2000LastDate">Last Service Date</label>
+ <input type="date" id="service2000LastDate">
+ </div>
+ </div>
+
+ <div class="form-actions">
+ <button type="button" class="btn-secondary" onclick="showMaintenancePage()">Cancel</button>
+ <button type="submit">Save Equipment</button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <!-- Edit Equipment Modal -->
+ <div id="editModal" class="modal">
+ <div class="modal-content">
+ <div class="modal-header">
+ <h2>Edit Equipment</h2>
+ <span class="close" onclick="closeEditModal()">&times;</span>
+ </div>
+ <form id="editForm">
+ <input type="hidden" id="editEquipmentId">
+ <div class="form-group">
+ <label for="editCurrentHmr">Current HMR</label>
+ <input type="number" id="editCurrentHmr" required>
+ </div>
+ <div class="form-group">
+ <label for="editService500Previous">500hr Service Previous HMR</label>
+ <input type="number" id="editService500Previous">
+ </div>
+ <div class="form-group">
+ <label for="editService500LastDate">500hr Service Last Date</label>
+ <input type="date" id="editService500LastDate">
+ </div>
+ <div class="form-group">
+ <label for="editService1000Previous">1000hr Service Previous HMR</label>
+ <input type="number" id="editService1000Previous">
+ </div>
+ <div class="form-group">
+ <label for="editService1000LastDate">1000hr Service Last Date</label>
+ <input type="date" id="editService1000LastDate">
+ </div>
+ <div class="form-group">
+ <label for="editService2000Previous">2000hr Service Previous HMR</label>
+ <input type="number" id="editService2000Previous">
+ </div>
+ <div class="form-group">
+ <label for="editService2000LastDate">2000hr Service Last Date</label>
+ <input type="date" id="editService2000LastDate">
+ </div>
+ <div class="form-actions">
+ <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+ <button type="submit">Save Changes</button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <!-- Floating action button -->
+ <div id="floatingBtn" class="floating-btn" onclick="showHomePage()" style="display: none;">
+ <i class="fas fa-home"></i>
+ </div>
+
+ <!-- Font Awesome for icons -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+ <script>
+ // Equipment data structure
+ let equipmentData = [];
+
+ // Initialize with sample data
+ function initializeSampleData() {
+ equipmentData = [
+ {
+ id: "AP39UQ0097",
+ type: "Tipper",
+ currentHmr: 5145,
+ service500: { previous: 5106, lastDate: "2024-05-15", nextDue: 5606, hmrLeft: 461, status: "ok" },
+ service1000: { previous: 5146, lastDate: "2024-04-10", nextDue: 6146, hmrLeft: 1001, status: "ok" },
+ service2000: { previous: 4105, lastDate: "2024-03-01", nextDue: 6105, hmrLeft: 960, status: "ok" }
+ },
+ {
+ id: "AP39UQ0095",
+ type: "Tipper",
+ currentHmr: 3527,
+ service500: { previous: 3097, lastDate: "2024-06-01", nextDue: 3597, hmrLeft: 70, status: "action" },
+ service1000: { previous: 3095, lastDate: "2024-05-20", nextDue: 4095, hmrLeft: 568, status: "ok" },
+ service2000: { previous: 2152, lastDate: "2024-02-15", nextDue: 4152, hmrLeft: 625, status: "ok" }
+ },
+ {
+ id: "AP39OQ9026",
+ type: "Loader",
+ currentHmr: 2944,
+ service500: { previous: 2569, lastDate: "2024-05-25", nextDue: 3069, hmrLeft: 125, status: "warning" },
+ service1000: { previous: 2088, lastDate: "2024-04-05", nextDue: 3088, hmrLeft: 144, status: "warning" },
+ service2000: { previous: 2132, lastDate: "2024-01-10", nextDue: 4132, hmrLeft: 1188, status: "ok" }
+ },
+ {
+ id: "312126",
+ type: "Excavator",
+ currentHmr: 1849,
+ service500: { previous: 1530, lastDate: "2024-06-05", nextDue: 2030, hmrLeft: 181, status: "ok" },
+ service1000: { previous: 1011, lastDate: "2024-05-10", nextDue: 2011, hmrLeft: 162, status: "ok" },
+ service2000: { previous: 0, lastDate: "-", nextDue: 2000, hmrLeft: 151, status: "ok" }
+ }
+ ];
+
+ // Add 8 more tippers with sample data
+ for (let i = 1; i <= 8; i++) {
+ equipmentData.push({
+ id: `AP39UQ0${100 + i}`,
+ type: "Tipper",
+ currentHmr: 2500 + (i * 200),
+ service500: { 
+ previous: 2400 + (i * 200), 
+ lastDate: `2024-0${5 + (i % 3)}-${10 + (i % 20)}`, 
+ nextDue: 2900 + (i * 200), 
+ hmrLeft: 400 - (i * 20), 
+ status: (400 - (i * 20)) < 100 ? "warning" : "ok" 
+ },
+ service1000: { 
+ previous: 1900 + (i * 200), 
+ lastDate: `2024-0${4 + (i % 2)}-${15 + (i % 15)}`, 
+ nextDue: 2900 + (i * 200), 
+ hmrLeft: 400 - (i * 15), 
+ status: (400 - (i * 15)) < 150 ? "warning" : "ok" 
+ },
+ service2000: { 
+ previous: 1000 + (i * 200), 
+ lastDate: `2024-0${2 + (i % 2)}-${5 + (i % 25)}`, 
+ nextDue: 3000 + (i * 200), 
+ hmrLeft: 500 - (i * 25), 
+ status: "ok" 
+ }
+ });
+ }
+ }
+
+ // Page navigation functions
+ function showMaintenancePage() {
+ document.getElementById('homePage').style.display = 'none';
+ document.getElementById('maintenancePage').style.display = 'block';
+ document.getElementById('addEquipmentPage').style.display = 'none';
+ document.getElementById('floatingBtn').style.display = 'flex';
+ populateEquipmentTable();
+ filterTable();
+ }
+
+ function showHomePage() {
+ document.getElementById('homePage').style.display = 'block';
+ document.getElementById('maintenancePage').style.display = 'none';
+ document.getElementById('addEquipmentPage').style.display = 'none';
+ document.getElementById('floatingBtn').style.display = 'none';
+ updateHomePage();
+ }
+
+ function showAddEquipmentPage() {
+ document.getElementById('homePage').style.display = 'none';
+ document.getElementById('maintenancePage').style.display = 'none';
+ document.getElementById('addEquipmentPage').style.display = 'block';
+ document.getElementById('floatingBtn').style.display = 'flex';
+ }
+
+ // Update homepage with Mail Sent and Warning Equipment
+ function updateHomePage() {
+ const mailSentTippers = document.getElementById("mailSentTippers");
+ const warningTippers = document.getElementById("warningTippers");
+ mailSentTippers.innerHTML = "";
+ warningTippers.innerHTML = "";
+
+ let mailSentCount = 0;
+ let warningCount = 0;
+
+ equipmentData.forEach(equipment => {
+ if (equipment.type !== "Tipper") return;
+
+ const status500 = equipment.service500.status;
+ const status1000 = equipment.service1000.status;
+ const status2000 = equipment.service2000.status;
+
+ if (status500 === "action" || status1000 === "action" || status2000 === "action") {
+ const btn = document.createElement("a");
+ btn.className = "status-btn mail-sent-btn";
+ btn.textContent = `Mail Sent: ${equipment.id}`;
+ mailSentTippers.appendChild(btn);
+ mailSentCount++;
+ }
+
+ if (status500 === "warning" || status1000 === "warning" || status2000 === "warning") {
+ const btn = document.createElement("a");
+ btn.className = "status-btn warning-btn";
+ btn.textContent = `Warning: ${equipment.id}`;
+ warningTippers.appendChild(btn);
+ warningCount++;
+ }
+ });
+
+ if (mailSentCount === 0) {
+ const p = document.createElement("p");
+ p.className = "equipment-item";
+ p.textContent = "No Equipment with Mail Sent status";
+ mailSentTippers.appendChild(p);
+ }
+
+ if (warningCount === 0) {
+ const p = document.createElement("p");
+ p.className = "equipment-item";
+ p.textContent = "No Equipment with Warning status";
+ warningTippers.appendChild(p);
+ }
+ }
+
+ // Populate equipment table
+ function populateEquipmentTable() {
+ const tableBody = document.getElementById("equipmentTableBody");
+ tableBody.innerHTML = "";
+
+ equipmentData.forEach(equipment => {
+ const row = document.createElement("tr");
+ 
+ // Basic info
+ row.innerHTML = `
+ <td>${equipment.id}</td>
+ <td>${equipment.type}</td>
+ <td>${equipment.currentHmr}</td>
+ 
+ <!-- 500 hr service -->
+ <td>${equipment.service500.previous}</td>
+ <td>${equipment.service500.lastDate}</td>
+ <td>${equipment.service500.nextDue}</td>
+ <td>${equipment.service500.hmrLeft}</td>
+ <td>${getStatusBadge(equipment.service500.status)}</td>
+ 
+ <!-- 1000 hr service -->
+ <td>${equipment.service1000.previous}</td>
+ <td>${equipment.service1000.lastDate}</td>
+ <td>${equipment.service1000.nextDue}</td>
+ <td>${equipment.service1000.hmrLeft}</td>
+ <td>${getStatusBadge(equipment.service1000.status)}</td>
+ 
+ <!-- 2000 hr service -->
+ <td>${equipment.service2000.previous}</td>
+ <td>${equipment.service2000.lastDate}</td>
+ <td>${equipment.service2000.nextDue}</td>
+ <td>${equipment.service2000.hmrLeft}</td>
+ <td>${getStatusBadge(equipment.service2000.status)}</td>
+ 
+ <!-- Actions -->
+ <td>
+ <button onclick="editEquipment('${equipment.id}')">Edit</button>
+ <button class="btn-danger" onclick="deleteEquipment('${equipment.id}')">Delete</button>
+ </td>
+ `;
+
+ tableBody.appendChild(row);
+ });
+ }
+
+ function getStatusBadge(status) {
+ switch(status) {
+ case "ok": return '<span class="status-ok">OK</span>';
+ case "warning": return '<span class="status-warning">Warning</span>';
+ case "action": return '<span class="status-action">Mail Sent</span>';
+ default: return status;
+ }
+ }
+
+ // Table functions
+ function searchTable() {
+ const input = document.getElementById("searchInput");
+ const filter = input.value.toUpperCase();
+ const table = document.getElementById("maintenanceTable");
+ const tr = table.getElementsByTagName("tr");
+ 
+ for (let i = 2; i < tr.length; i++) {
+ let found = false;
+ const td = tr[i].getElementsByTagName("td");
+ for (let j = 0; j < td.length; j++) {
+ if (td[j]) {
+ const txtValue = td[j].textContent || td[j].innerText;
+ if (txtValue.toUpperCase().indexOf(filter) > -1) {
+ found = true;
+ break;
+ }
+ }
+ }
+ tr[i].style.display = found ? "" : "none";
+ }
+ }
+
+ function filterTable() {
+ const statusFilter = document.getElementById("statusFilter").value;
+ const equipmentFilter = document.getElementById("equipmentFilter").value;
+ const table = document.getElementById("maintenanceTable");
+ const tr = table.getElementsByTagName("tr");
+
+ for (let i = 2; i < tr.length; i++) {
+ const statusCells = [
+ tr[i].cells[7], // 500hr status
+ tr[i].cells[12], // 1000hr status
+ tr[i].cells[17] // 2000hr status
+ ];
+ const equipmentType = tr[i].cells[1].textContent;
+ let statusMatch = false;
+ let equipmentMatch = equipmentFilter === "" || equipmentType === equipmentFilter;
+ 
+ if (statusFilter === "") {
+ statusMatch = true;
+ } else {
+ for (const cell of statusCells) {
+ if (cell.textContent.toLowerCase().includes(statusFilter)) {
+ statusMatch = true;
+ break;
+ }
+ }
+ }
+ 
+ tr[i].style.display = (statusMatch && equipmentMatch) ? "" : "none";
+ }
+ }
+
+ function exportToExcel() {
+ alert("Exporting data to Excel...");
+ // In a real implementation, this would generate and download an Excel file
+ }
+
+ // Equipment form handling
+ document.getElementById('equipmentForm').addEventListener('submit', function(e) {
+ e.preventDefault();
+ 
+ const newEquipment = {
+ id: document.getElementById('equipmentId').value,
+ type: document.getElementById('equipmentType').value,
+ currentHmr: parseInt(document.getElementById('currentHmr').value),
+ service500: {
+ previous: parseInt(document.getElementById('service500Previous').value) || 0,
+ lastDate: document.getElementById('service500LastDate').value || "-",
+ nextDue: (parseInt(document.getElementById('service500Previous').value) || 0) + 500,
+ hmrLeft: (parseInt(document.getElementById('service500Previous').value) || 0) + 500 - parseInt(document.getElementById('currentHmr').value),
+ status: calculateStatus((parseInt(document.getElementById('service500Previous').value) || 0) + 500 - parseInt(document.getElementById('currentHmr').value))
+ },
+ service1000: {
+ previous: parseInt(document.getElementById('service1000Previous').value) || 0,
+ lastDate: document.getElementById('service1000LastDate').value || "-",
+ nextDue: (parseInt(document.getElementById('service1000Previous').value) || 0) + 1000,
+ hmrLeft: (parseInt(document.getElementById('service1000Previous').value) || 0) + 1000 - parseInt(document.getElementById('currentHmr').value),
+ status: calculateStatus((parseInt(document.getElementById('service1000Previous').value) || 0) + 1000 - parseInt(document.getElementById('currentHmr').value))
+ },
+ service2000: {
+ previous: parseInt(document.getElementById('service2000Previous').value) || 0,
+ lastDate: document.getElementById('service2000LastDate').value || "-",
+ nextDue: (parseInt(document.getElementById('service2000Previous').value) || 0) + 2000,
+ hmrLeft: (parseInt(document.getElementById('service2000Previous').value) || 0) + 2000 - parseInt(document.getElementById('currentHmr').value),
+ status: calculateStatus((parseInt(document.getElementById('service2000Previous').value) || 0) + 2000 - parseInt(document.getElementById('currentHmr').value))
+ }
+ };
+ 
+ equipmentData.push(newEquipment);
+ populateEquipmentTable();
+ showMaintenancePage();
+ });
+
+ function calculateStatus(hmrLeft) {
+ if (hmrLeft <= 50) return "action";
+ if (hmrLeft <= 150) return "warning";
+ return "ok";
+ }
+
+ // Edit equipment functionality
+ function editEquipment(id) {
+ const equipment = equipmentData.find(e => e.id === id);
+ if (!equipment) return;
+
+ document.getElementById('editEquipmentId').value = equipment.id;
+ document.getElementById('editCurrentHmr').value = equipment.currentHmr;
+ document.getElementById('editService500Previous').value = equipment.service500.previous;
+ document.getElementById('editService500LastDate').value = equipment.service500.lastDate;
+ document.getElementById('editService1000Previous').value = equipment.service1000.previous;
+ document.getElementById('editService1000LastDate').value = equipment.service1000.lastDate;
+ document.getElementById('editService2000Previous').value = equipment.service2000.previous;
+ document.getElementById('editService2000LastDate').value = equipment.service2000.lastDate;
+
+ document.getElementById('editModal').style.display = 'flex';
+ }
+
+ function closeEditModal() {
+ document.getElementById('editModal').style.display = 'none';
+ }
+
+ document.getElementById('editForm').addEventListener('submit', function(e) {
+ e.preventDefault();
+ 
+ const id = document.getElementById('editEquipmentId').value;
+ const currentHmr = parseInt(document.getElementById('editCurrentHmr').value);
+ const service500Previous = parseInt(document.getElementById('editService500Previous').value) || 0;
+ const service500LastDate = document.getElementById('editService500LastDate').value;
+ const service1000Previous = parseInt(document.getElementById('editService1000Previous').value) || 0;
+ const service1000LastDate = document.getElementById('editService1000LastDate').value;
+ const service2000Previous = parseInt(document.getElementById('editService2000Previous').value) || 0;
+ const service2000LastDate = document.getElementById('editService2000LastDate').value;
+
+ const equipmentIndex = equipmentData.findIndex(e => e.id === id);
+ if (equipmentIndex !== -1) {
+ equipmentData[equipmentIndex].currentHmr = currentHmr;
+ equipmentData[equipmentIndex].service500.previous = service500Previous;
+ equipmentData[equipmentIndex].service500.lastDate = service500LastDate;
+ equipmentData[equipmentIndex].service500.nextDue = service500Previous + 500;
+ equipmentData[equipmentIndex].service500.hmrLeft = service500Previous + 500 - currentHmr;
+ equipmentData[equipmentIndex].service500.status = calculateStatus(service500Previous + 500 - currentHmr);
+
+ equipmentData[equipmentIndex].service1000.previous = service1000Previous;
+ equipmentData[equipmentIndex].service1000.lastDate = service1000LastDate;
+ equipmentData[equipmentIndex].service1000.nextDue = service1000Previous + 1000;
+ equipmentData[equipmentIndex].service1000.hmrLeft = service1000Previous + 1000 - currentHmr;
+ equipmentData[equipmentIndex].service1000.status = calculateStatus(service1000Previous + 1000 - currentHmr);
+
+ equipmentData[equipmentIndex].service2000.previous = service2000Previous;
+ equipmentData[equipmentIndex].service2000.lastDate = service2000LastDate;
+ equipmentData[equipmentIndex].service2000.nextDue = service2000Previous + 2000;
+ equipmentData[equipmentIndex].service2000.hmrLeft = service2000Previous + 2000 - currentHmr;
+ equipmentData[equipmentIndex].service2000.status = calculateStatus(service2000Previous + 2000 - currentHmr);
+
+ populateEquipmentTable();
+ closeEditModal();
+ }
+ });
+
+ function deleteEquipment(id) {
+ if (confirm(`Are you sure you want to delete equipment ${id}?`)) {
+ equipmentData = equipmentData.filter(e => e.id !== id);
+ populateEquipmentTable();
+ updateHomePage();
+ }
+ }
+
+ // Initialize the page
+ document.addEventListener('DOMContentLoaded', function() {
+ initializeSampleData();
+ showHomePage();
+ });
+ </script>
 </body>
 </html>
