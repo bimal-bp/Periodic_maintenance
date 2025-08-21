@@ -592,10 +592,10 @@
                                 </button>
                             </td>
                         </tr>
-                        <!-- Sample Data for Excavators/Loaders -->
+                        <!-- AP39OQ9026 as Tipper -->
                         <tr>
                             <td>AP39OQ9026</td>
-                            <td>Loader</td>
+                            <td>Tipper</td>
                             <td>2944</td>
                             <!-- 500 hr data -->
                             <td>2569</td>
@@ -621,6 +621,7 @@
                                 </button>
                             </td>
                         </tr>
+                        <!-- Sample Data for Excavators/Loaders -->
                         <tr>
                             <td>312126</td>
                             <td>Excavator</td>
@@ -690,6 +691,15 @@
                     <input type="number" id="lastServiceHmr" placeholder="Enter HMR at last service">
                 </div>
                 
+                <div class="form-group">
+                    <label for="serviceInterval">Service Interval (hrs)</label>
+                    <select id="serviceInterval">
+                        <option value="500">500 Hours</option>
+                        <option value="1000">1000 Hours</option>
+                        <option value="2000">2000 Hours</option>
+                    </select>
+                </div>
+                
                 <div class="form-actions">
                     <button class="secondary" onclick="showTab('maintenance')">
                         <i class="fas fa-times"></i> Cancel
@@ -708,6 +718,9 @@
     </div>
 
     <script>
+        // Equipment data storage
+        let equipmentData = [];
+        
         // Tab navigation
         function showTab(tabId) {
             // Hide all tabs
@@ -739,6 +752,35 @@
                 showTab(tab.getAttribute('data-tab'));
             });
         });
+        
+        // Calculate maintenance data
+        function calculateMaintenance(currentHmr, lastServiceHmr, lastServiceDate, serviceInterval) {
+            const intervals = [500, 1000, 2000];
+            const result = {};
+            
+            intervals.forEach(interval => {
+                const lastServiceAtInterval = Math.floor(lastServiceHmr / interval) * interval;
+                const nextServiceAt = lastServiceAtInterval + interval;
+                const hmrLeft = nextServiceAt - currentHmr;
+                
+                let status = 'ok';
+                if (hmrLeft <= 50) {
+                    status = 'action';
+                } else if (hmrLeft <= 100) {
+                    status = 'warning';
+                }
+                
+                result[interval] = {
+                    previous: lastServiceAtInterval,
+                    nextDue: nextServiceAt,
+                    hmrLeft: hmrLeft,
+                    status: status,
+                    lastDate: lastServiceDate
+                };
+            });
+            
+            return result;
+        }
         
         // Update dashboard with summary data
         function updateDashboard() {
@@ -781,7 +823,7 @@
                 
                 for (const cell of statusCells) {
                     const status = cell.textContent.toLowerCase();
-                    if (status.includes("mail sent")) {
+                    if (status.includes("mail sent") || status.includes("action")) {
                         hasAction = true;
                     } else if (status.includes("warning")) {
                         hasWarning = true;
@@ -907,25 +949,119 @@
         function updateHmr(equipmentId) {
             const newHmr = prompt(`Enter new HMR value for ${equipmentId}:`);
             if (newHmr && !isNaN(newHmr)) {
+                // Update the table cell
+                const table = document.getElementById("maintenanceTable");
+                const tr = table.getElementsByTagName("tr");
+                
+                for (let i = 2; i < tr.length; i++) {
+                    const cells = tr[i].cells;
+                    if (cells[0].textContent === equipmentId) {
+                        cells[2].textContent = newHmr;
+                        
+                        // Recalculate maintenance data
+                        const lastServiceHmr500 = parseInt(cells[3].textContent);
+                        const lastDate500 = cells[4].textContent;
+                        
+                        // Recalculate HMR left for each service
+                        const hmrLeft500 = parseInt(cells[6].textContent) + (parseInt(newHmr) - parseInt(cells[2].textContent));
+                        cells[6].textContent = hmrLeft500;
+                        
+                        const hmrLeft1000 = parseInt(cells[11].textContent) + (parseInt(newHmr) - parseInt(cells[2].textContent));
+                        cells[11].textContent = hmrLeft1000;
+                        
+                        const hmrLeft2000 = parseInt(cells[16].textContent) + (parseInt(newHmr) - parseInt(cells[2].textContent));
+                        cells[16].textContent = hmrLeft2000;
+                        
+                        // Update status badges
+                        updateStatusBadge(cells[7], hmrLeft500);
+                        updateStatusBadge(cells[12], hmrLeft1000);
+                        updateStatusBadge(cells[17], hmrLeft2000);
+                        
+                        break;
+                    }
+                }
+                
                 alert(`HMR updated to ${newHmr} for ${equipmentId}`);
-                // In a real application, this would update the database
+                updateDashboard();
+            }
+        }
+        
+        function updateStatusBadge(cell, hmrLeft) {
+            if (hmrLeft <= 50) {
+                cell.innerHTML = '<span class="status-badge status-action-badge">Action Required</span>';
+            } else if (hmrLeft <= 100) {
+                cell.innerHTML = '<span class="status-badge status-warning-badge">Warning</span>';
+            } else {
+                cell.innerHTML = '<span class="status-badge status-ok-badge">OK</span>';
             }
         }
         
         function addNewEquipment() {
             const equipmentId = document.getElementById("equipmentId").value;
             const equipmentType = document.getElementById("equipmentType").value;
-            const currentHmr = document.getElementById("currentHmr").value;
+            const currentHmr = parseInt(document.getElementById("currentHmr").value);
             const lastServiceDate = document.getElementById("lastServiceDate").value;
-            const lastServiceHmr = document.getElementById("lastServiceHmr").value;
+            const lastServiceHmr = parseInt(document.getElementById("lastServiceHmr").value);
+            const serviceInterval = parseInt(document.getElementById("serviceInterval").value);
             
-            if (!equipmentId || !equipmentType || !currentHmr) {
+            if (!equipmentId || !equipmentType || isNaN(currentHmr) || !lastServiceDate || isNaN(lastServiceHmr)) {
                 alert("Please fill in all required fields");
                 return;
             }
             
-            alert(`Adding new equipment: ${equipmentId} (${equipmentType})`);
-            // In a real application, this would add the equipment to the database
+            // Calculate maintenance data
+            const maintenanceData = calculateMaintenance(currentHmr, lastServiceHmr, lastServiceDate, serviceInterval);
+            
+            // Add to equipment data array
+            equipmentData.push({
+                id: equipmentId,
+                type: equipmentType,
+                currentHmr: currentHmr,
+                maintenance: maintenanceData
+            });
+            
+            // Add to table
+            const table = document.getElementById("maintenanceTable").getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            
+            // Equipment ID, Type, Current HMR
+            newRow.insertCell(0).textContent = equipmentId;
+            newRow.insertCell(1).textContent = equipmentType;
+            newRow.insertCell(2).textContent = currentHmr;
+            
+            // 500 hr service data
+            newRow.insertCell(3).textContent = maintenanceData[500].previous;
+            newRow.insertCell(4).textContent = lastServiceDate;
+            newRow.insertCell(5).textContent = maintenanceData[500].nextDue;
+            newRow.insertCell(6).textContent = maintenanceData[500].hmrLeft;
+            const status500Cell = newRow.insertCell(7);
+            updateStatusBadge(status500Cell, maintenanceData[500].hmrLeft);
+            
+            // 1000 hr service data
+            newRow.insertCell(8).textContent = maintenanceData[1000].previous;
+            newRow.insertCell(9).textContent = lastServiceDate;
+            newRow.insertCell(10).textContent = maintenanceData[1000].nextDue;
+            newRow.insertCell(11).textContent = maintenanceData[1000].hmrLeft;
+            const status1000Cell = newRow.insertCell(12);
+            updateStatusBadge(status1000Cell, maintenanceData[1000].hmrLeft);
+            
+            // 2000 hr service data
+            newRow.insertCell(13).textContent = maintenanceData[2000].previous;
+            newRow.insertCell(14).textContent = lastServiceDate;
+            newRow.insertCell(15).textContent = maintenanceData[2000].nextDue;
+            newRow.insertCell(16).textContent = maintenanceData[2000].hmrLeft;
+            const status2000Cell = newRow.insertCell(17);
+            updateStatusBadge(status2000Cell, maintenanceData[2000].hmrLeft);
+            
+            // Actions cell
+            const actionCell = newRow.insertCell(18);
+            actionCell.innerHTML = `
+                <button class="secondary" onclick="updateHmr('${equipmentId}')">
+                    <i class="fas fa-sync-alt"></i> Update
+                </button>
+            `;
+            
+            alert(`Added new equipment: ${equipmentId} (${equipmentType})`);
             
             // Clear the form
             document.getElementById("equipmentId").value = "";
@@ -933,6 +1069,10 @@
             document.getElementById("currentHmr").value = "";
             document.getElementById("lastServiceDate").value = "";
             document.getElementById("lastServiceHmr").value = "";
+            document.getElementById("serviceInterval").value = "500";
+            
+            // Update dashboard
+            updateDashboard();
             
             // Switch to maintenance tab
             showTab('maintenance');
@@ -940,11 +1080,12 @@
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            updateDashboard();
-            
             // Set current date and time
             const now = new Date();
             document.getElementById("lastUpdated").textContent = now.toLocaleString();
+            
+            // Initialize with sample data
+            updateDashboard();
         });
     </script>
 </body>
