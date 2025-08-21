@@ -410,11 +410,11 @@
             <div class="equipment-summary">
                 <div class="summary-card">
                     <h3>Total Equipment</h3>
-                    <div class="value" id="totalEquipment">12</div>
+                    <div class="value" id="totalEquipment">13</div>
                 </div>
                 <div class="summary-card">
                     <h3>OK Status</h3>
-                    <div class="value" id="okStatus">8</div>
+                    <div class="value" id="okStatus">9</div>
                 </div>
                 <div class="summary-card warning">
                     <h3>Warning Status</h3>
@@ -573,7 +573,7 @@
                             <td>2024-06-01</td>
                             <td>3597</td>
                             <td>70</td>
-                            <td><span class="status-badge status-action-badge">Mail Sent</span></td>
+                            <td><span class="status-badge status-action-badge">Mail Sent (500hr)</span></td>
                             <!-- 1000 hr data -->
                             <td>3095</td>
                             <td>2024-05-20</td>
@@ -602,13 +602,13 @@
                             <td>2024-05-25</td>
                             <td>3069</td>
                             <td>125</td>
-                            <td><span class="status-badge status-warning-badge">Warning</span></td>
+                            <td><span class="status-badge status-warning-badge">Warning (500hr)</span></td>
                             <!-- 1000 hr data -->
                             <td>2088</td>
                             <td>2024-04-05</td>
                             <td>3088</td>
                             <td>144</td>
-                            <td><span class="status-badge status-warning-badge">Warning</span></td>
+                            <td><span class="status-badge status-warning-badge">Warning (1000hr)</span></td>
                             <!-- 2000 hr data -->
                             <td>2132</td>
                             <td>2024-01-10</td>
@@ -646,6 +646,35 @@
                             <td><span class="status-badge status-ok-badge">OK</span></td>
                             <td>
                                 <button class="secondary" onclick="updateHmr('312126')">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- New Excavator EC210DL -->
+                        <tr>
+                            <td>EC210DL</td>
+                            <td>Excavator</td>
+                            <td>1250</td>
+                            <!-- 500 hr data -->
+                            <td>1000</td>
+                            <td>2024-06-20</td>
+                            <td>1500</td>
+                            <td>250</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 1000 hr data -->
+                            <td>1000</td>
+                            <td>2024-06-20</td>
+                            <td>2000</td>
+                            <td>750</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 2000 hr data -->
+                            <td>0</td>
+                            <td>-</td>
+                            <td>2000</td>
+                            <td>750</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <td>
+                                <button class="secondary" onclick="updateHmr('EC210DL')">
                                     <i class="fas fa-sync-alt"></i> Update
                                 </button>
                             </td>
@@ -813,54 +842,53 @@
                 
                 // Check status cells
                 const statusCells = [
-                    cells[7],  // 500hr status
-                    cells[12], // 1000hr status
-                    cells[17]  // 2000hr status
+                    {cell: cells[7], type: "500hr"},  // 500hr status
+                    {cell: cells[12], type: "1000hr"}, // 1000hr status
+                    {cell: cells[17], type: "2000hr"}  // 2000hr status
                 ];
                 
-                let hasWarning = false;
-                let hasAction = false;
+                let warningIssues = [];
+                let actionIssues = [];
                 
-                for (const cell of statusCells) {
-                    const status = cell.textContent.toLowerCase();
+                for (const statusCell of statusCells) {
+                    const status = statusCell.cell.textContent.toLowerCase();
                     if (status.includes("mail sent") || status.includes("action")) {
-                        hasAction = true;
+                        actionIssues.push(statusCell.type);
                     } else if (status.includes("warning")) {
-                        hasWarning = true;
+                        warningIssues.push(statusCell.type);
                     }
                 }
                 
-                if (hasAction) {
+                if (actionIssues.length > 0) {
                     actionStatus++;
                     const item = document.createElement("div");
                     item.className = "status-item status-action";
                     item.innerHTML = `
                         <div>${equipmentId} (${equipmentType})</div>
-                        <div>${currentHmr} HMR</div>
+                        <div>${currentHmr} HMR - ${actionIssues.join(", ")}</div>
                     `;
                     actionEquipment.appendChild(item);
-                } else if (hasWarning) {
+                } else if (warningIssues.length > 0) {
                     warningStatus++;
                     const item = document.createElement("div");
                     item.className = "status-item status-warning";
                     item.innerHTML = `
                         <div>${equipmentId} (${equipmentType})</div>
-                        <div>${currentHmr} HMR</div>
+                        <div>${currentHmr} HMR - ${warningIssues.join(", ")}</div>
                     `;
                     warningEquipment.appendChild(item);
                 } else {
                     okStatus++;
-                }
-                
-                // Add to recently serviced (mock data for demo)
-                if (i % 2 === 0) {
-                    const item = document.createElement("div");
-                    item.className = "status-item status-ok";
-                    item.innerHTML = `
-                        <div>${equipmentId} (${equipmentType})</div>
-                        <div>Serviced: 2024-07-15</div>
-                    `;
-                    recentlyServiced.appendChild(item);
+                    // Add to recently serviced if it's an OK status equipment
+                    if (i % 2 === 0) {
+                        const item = document.createElement("div");
+                        item.className = "status-item status-ok";
+                        item.innerHTML = `
+                            <div>${equipmentId} (${equipmentType})</div>
+                            <div>Serviced: 2024-07-15</div>
+                        `;
+                        recentlyServiced.appendChild(item);
+                    }
                 }
             }
             
@@ -956,26 +984,23 @@
                 for (let i = 2; i < tr.length; i++) {
                     const cells = tr[i].cells;
                     if (cells[0].textContent === equipmentId) {
+                        const oldHmr = parseInt(cells[2].textContent);
                         cells[2].textContent = newHmr;
                         
-                        // Recalculate maintenance data
-                        const lastServiceHmr500 = parseInt(cells[3].textContent);
-                        const lastDate500 = cells[4].textContent;
-                        
                         // Recalculate HMR left for each service
-                        const hmrLeft500 = parseInt(cells[6].textContent) + (parseInt(newHmr) - parseInt(cells[2].textContent));
+                        const hmrLeft500 = parseInt(cells[6].textContent) + (oldHmr - parseInt(newHmr));
                         cells[6].textContent = hmrLeft500;
                         
-                        const hmrLeft1000 = parseInt(cells[11].textContent) + (parseInt(newHmr) - parseInt(cells[2].textContent));
+                        const hmrLeft1000 = parseInt(cells[11].textContent) + (oldHmr - parseInt(newHmr));
                         cells[11].textContent = hmrLeft1000;
                         
-                        const hmrLeft2000 = parseInt(cells[16].textContent) + (parseInt(newHmr) - parseInt(cells[2].textContent));
+                        const hmrLeft2000 = parseInt(cells[16].textContent) + (oldHmr - parseInt(newHmr));
                         cells[16].textContent = hmrLeft2000;
                         
                         // Update status badges
-                        updateStatusBadge(cells[7], hmrLeft500);
-                        updateStatusBadge(cells[12], hmrLeft1000);
-                        updateStatusBadge(cells[17], hmrLeft2000);
+                        updateStatusBadge(cells[7], hmrLeft500, "500hr");
+                        updateStatusBadge(cells[12], hmrLeft1000, "1000hr");
+                        updateStatusBadge(cells[17], hmrLeft2000, "2000hr");
                         
                         break;
                     }
@@ -986,11 +1011,11 @@
             }
         }
         
-        function updateStatusBadge(cell, hmrLeft) {
+        function updateStatusBadge(cell, hmrLeft, serviceType) {
             if (hmrLeft <= 50) {
-                cell.innerHTML = '<span class="status-badge status-action-badge">Action Required</span>';
+                cell.innerHTML = `<span class="status-badge status-action-badge">Mail Sent (${serviceType})</span>`;
             } else if (hmrLeft <= 100) {
-                cell.innerHTML = '<span class="status-badge status-warning-badge">Warning</span>';
+                cell.innerHTML = `<span class="status-badge status-warning-badge">Warning (${serviceType})</span>`;
             } else {
                 cell.innerHTML = '<span class="status-badge status-ok-badge">OK</span>';
             }
@@ -1035,7 +1060,7 @@
             newRow.insertCell(5).textContent = maintenanceData[500].nextDue;
             newRow.insertCell(6).textContent = maintenanceData[500].hmrLeft;
             const status500Cell = newRow.insertCell(7);
-            updateStatusBadge(status500Cell, maintenanceData[500].hmrLeft);
+            updateStatusBadge(status500Cell, maintenanceData[500].hmrLeft, "500hr");
             
             // 1000 hr service data
             newRow.insertCell(8).textContent = maintenanceData[1000].previous;
@@ -1043,7 +1068,7 @@
             newRow.insertCell(10).textContent = maintenanceData[1000].nextDue;
             newRow.insertCell(11).textContent = maintenanceData[1000].hmrLeft;
             const status1000Cell = newRow.insertCell(12);
-            updateStatusBadge(status1000Cell, maintenanceData[1000].hmrLeft);
+            updateStatusBadge(status1000Cell, maintenanceData[1000].hmrLeft, "1000hr");
             
             // 2000 hr service data
             newRow.insertCell(13).textContent = maintenanceData[2000].previous;
@@ -1051,7 +1076,7 @@
             newRow.insertCell(15).textContent = maintenanceData[2000].nextDue;
             newRow.insertCell(16).textContent = maintenanceData[2000].hmrLeft;
             const status2000Cell = newRow.insertCell(17);
-            updateStatusBadge(status2000Cell, maintenanceData[2000].hmrLeft);
+            updateStatusBadge(status2000Cell, maintenanceData[2000].hmrLeft, "2000hr");
             
             // Actions cell
             const actionCell = newRow.insertCell(18);
