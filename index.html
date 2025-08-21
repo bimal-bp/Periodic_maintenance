@@ -1,925 +1,951 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Equipment Maintenance Tracker</title>
- <style>
- :root {
- --primary: #2c3e50;
- --secondary: #3498db;
- --success: #28a745;
- --warning: #ffc107;
- --danger: #dc3545;
- --light: #f8f9fa;
- --dark: #343a40;
- }
- body {
- font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
- margin: 0;
- padding: 0;
- background-color: #f5f5f5;
- }
- .container {
- max-width: 1400px;
- margin: 0 auto;
- background: white;
- border-radius: 8px;
- box-shadow: 0 0 20px rgba(0,0,0,0.1);
- padding: 20px;
- position: relative;
- }
- h1, h2, h3 {
- color: var(--primary);
- text-align: center;
- }
- h1 {
- margin-bottom: 30px;
- padding-bottom: 15px;
- border-bottom: 2px solid var(--secondary);
- }
- .home-container {
- text-align: center;
- padding: 50px 20px;
- }
- .equipment-list {
- display: flex;
- flex-wrap: wrap;
- justify-content: center;
- gap: 30px;
- margin-top: 40px;
- }
- .equipment-card {
- background: white;
- border-radius: 8px;
- box-shadow: 0 4px 8px rgba(0,0,0,0.1);
- padding: 20px;
- width: 300px;
- transition: transform 0.3s;
- }
- .equipment-card:hover {
- transform: translateY(-5px);
- }
- .card-header {
- background-color: var(--primary);
- color: white;
- padding: 10px;
- border-radius: 5px 5px 0 0;
- margin: -20px -20px 20px -20px;
- }
- .card-body {
- text-align: left;
- }
- .equipment-item {
- margin-bottom: 10px;
- padding-bottom: 10px;
- border-bottom: 1px solid #eee;
- }
- .main-btn {
- display: inline-block;
- margin-top: 30px;
- padding: 12px 24px;
- background-color: var(--secondary);
- color: white;
- text-decoration: none;
- border-radius: 4px;
- font-size: 18px;
- transition: background-color 0.3s;
- }
- .main-btn:hover {
- background-color: #2980b9;
- }
- .status-btn {
- display: inline-block;
- margin: 10px;
- padding: 10px 20px;
- color: white;
- text-decoration: none;
- border-radius: 4px;
- font-size: 16px;
- transition: background-color 0.3s;
- cursor: pointer;
- }
- .warning-btn {
- background-color: var(--warning);
- color: var(--dark);
- }
- .warning-btn:hover {
- background-color: #e0a800;
- }
- .mail-sent-btn {
- background-color: var(--danger);
- }
- .mail-sent-btn:hover {
- background-color: #c82333;
- }
- .controls {
- display: flex;
- justify-content: space-between;
- margin-bottom: 20px;
- flex-wrap: wrap;
- gap: 15px;
- }
- .search-box {
- flex: 1;
- min-width: 250px;
- }
- .filter-group {
- display: flex;
- gap: 15px;
- align-items: center;
- }
- select, input {
- padding: 8px 12px;
- border: 1px solid #ddd;
- border-radius: 4px;
- font-size: 14px;
- }
- button {
- padding: 8px 16px;
- background-color: var(--secondary);
- color: white;
- border: none;
- border-radius: 4px;
- cursor: pointer;
- transition: background-color 0.3s;
- }
- button:hover {
- background-color: #2980b9;
- }
- .floating-btn {
- position: fixed;
- bottom: 30px;
- right: 30px;
- width: 60px;
- height: 60px;
- border-radius: 50%;
- background-color: var(--secondary);
- color: white;
- font-size: 24px;
- display: flex;
- align-items: center;
- justify-content: center;
- cursor: pointer;
- box-shadow: 0 4px 8px rgba(0,0,0,0.2);
- z-index: 100;
- transition: all 0.3s;
- }
- .floating-btn:hover {
- background-color: #2980b9;
- transform: scale(1.1);
- }
- table {
- width: 100%;
- border-collapse: collapse;
- margin-top: 20px;
- }
- th, td {
- padding: 12px 15px;
- text-align: center;
- border: 1px solid #ddd;
- }
- th {
- background-color: var(--primary);
- color: white;
- position: sticky;
- top: 0;
- }
- .service-header {
- background-color: var(--secondary);
- color: white;
- }
- tr:nth-child(even) {
- background-color: #f2f2f2;
- }
- tr:hover {
- background-color: #e9e9e9;
- }
- .status-ok {
- background-color: var(--success);
- color: white;
- font-weight: bold;
- padding: 4px 8px;
- border-radius: 4px;
- }
- .status-warning {
- background-color: var(--warning);
- color: var(--dark);
- font-weight: bold;
- padding: 4px 8px;
- border-radius: 4px;
- }
- .status-action {
- background-color: var(--danger);
- color: white;
- font-weight: bold;
- padding: 4px 8px;
- border-radius: 4px;
- }
- .footer {
- margin-top: 30px;
- text-align: center;
- color: #666;
- font-size: 14px;
- }
- .back-btn {
- display: inline-block;
- margin-bottom: 20px;
- padding: 8px 16px;
- background-color: var(--primary);
- color: white;
- text-decoration: none;
- border-radius: 4px;
- }
- .form-container {
- max-width: 800px;
- margin: 20px auto;
- padding: 20px;
- background: white;
- border-radius: 8px;
- box-shadow: 0 0 10px rgba(0,0,0,0.1);
- }
- .form-group {
- margin-bottom: 15px;
- }
- .form-group label {
- display: block;
- margin-bottom: 5px;
- font-weight: bold;
- }
- .form-group input {
- width: 100%;
- padding: 8px;
- border: 1px solid #ddd;
- border-radius: 4px;
- }
- .form-section {
- margin-bottom: 25px;
- padding-bottom: 15px;
- border-bottom: 1px solid #eee;
- }
- .form-section h3 {
- text-align: left;
- margin-bottom: 15px;
- color: var(--secondary);
- }
- .form-actions {
- display: flex;
- justify-content: flex-end;
- gap: 10px;
- margin-top: 20px;
- }
- .btn-secondary {
- background-color: #6c757d;
- }
- .btn-secondary:hover {
- background-color: #5a6268;
- }
- .btn-danger {
- background-color: var(--danger);
- }
- .btn-danger:hover {
- background-color: #c82333;
- }
- .modal {
- display: none;
- position: fixed;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- background-color: rgba(0,0,0,0.5);
- z-index: 1000;
- align-items: center;
- justify-content: center;
- }
- .modal-content {
- background-color: white;
- padding: 20px;
- border-radius: 8px;
- width: 90%;
- max-width: 500px;
- box-shadow: 0 0 20px rgba(0,0,0,0.2);
- }
- .modal-header {
- display: flex;
- justify-content: space-between;
- align-items: center;
- margin-bottom: 20px;
- }
- .close {
- font-size: 24px;
- cursor: pointer;
- }
- .action-buttons {
- display: flex;
- gap: 10px;
- margin-top: 20px;
- }
- @media (max-width: 768px) {
- .controls {
- flex-direction: column;
- }
- table {
- display: block;
- overflow-x: auto;
- }
- .equipment-card {
- width: 100%;
- }
- }
- </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Maintenance Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: relative;
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            border-color: #ddd;
+            border-bottom-color: white;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 20px;
+            min-height: 200px;
+        }
+        
+        .status-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-ok { background-color: rgba(40, 167, 69, 0.15); border-left: 4px solid var(--success); }
+        .status-warning { background-color: rgba(255, 193, 7, 0.15); border-left: 4px solid var(--warning); }
+        .status-action { background-color: rgba(220, 53, 69, 0.15); border-left: 4px solid var(--danger); }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            width: 100%;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        select, input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 10px 16px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.secondary {
+            background-color: var(--gray);
+        }
+        
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+        }
+        
+        .service-header {
+            background-color: var(--secondary);
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e9ecef;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-ok-badge {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-warning-badge {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .status-action-badge {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        /* Forms */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                margin-bottom: 5px;
+            }
+        }
+        
+        /* Equipment Summary */
+        .equipment-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+        
+        .summary-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .summary-card.warning .value {
+            color: var(--warning);
+        }
+        
+        .summary-card.action .value {
+            color: var(--danger);
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 12px 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .action-btn i {
+            font-size: 20px;
+            color: var(--secondary);
+        }
+    </style>
 </head>
 <body>
- <!-- Home Page -->
- <div id="homePage" class="container home-container">
- <h1>Equipment Management System</h1>
- <h2>Equipment Status Summary</h2>
- <div class="equipment-list">
- <div class="equipment-card">
- <div class="card-header">
- <h3>Mail Sent Equipment</h3>
- </div>
- <div class="card-body" id="mailSentTippers">
- </div>
- </div>
- <div class="equipment-card">
- <div class="card-header">
- <h3>Warning Equipment</h3>
- </div>
- <div class="card-body" id="warningTippers">
- </div>
- </div>
- </div>
- <div class="action-buttons">
- <a href="#" class="main-btn" onclick="showMaintenancePage()">View Maintenance Schedule</a>
- <a href="#" class="main-btn" onclick="showAddEquipmentPage()">Add New Equipment</a>
- </div>
- <div class="footer">
- <p>© 2025 Equipment Management System</p>
- </div>
- </div>
+    <div class="container">
+        <h1>Equipment Maintenance Tracker</h1>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="dashboard">Dashboard</div>
+            <div class="nav-tab" data-tab="maintenance">Maintenance Schedule</div>
+            <div class="nav-tab" data-tab="add-equipment">Add Equipment</div>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2>Equipment Status Overview</h2>
+            
+            <!-- Summary Cards -->
+            <div class="equipment-summary">
+                <div class="summary-card">
+                    <h3>Total Equipment</h3>
+                    <div class="value" id="totalEquipment">12</div>
+                </div>
+                <div class="summary-card">
+                    <h3>OK Status</h3>
+                    <div class="value" id="okStatus">8</div>
+                </div>
+                <div class="summary-card warning">
+                    <h3>Warning Status</h3>
+                    <div class="value" id="warningStatus">3</div>
+                </div>
+                <div class="summary-card action">
+                    <h3>Action Required</h3>
+                    <div class="value" id="actionStatus">1</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-btn" onclick="showTab('maintenance')">
+                    <i class="fas fa-tools"></i>
+                    <span>View Maintenance</span>
+                </div>
+                <div class="action-btn" onclick="showTab('add-equipment')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add New Equipment</span>
+                </div>
+                <div class="action-btn" onclick="exportToExcel()">
+                    <i class="fas fa-file-export"></i>
+                    <span>Export Data</span>
+                </div>
+            </div>
+            
+            <!-- Status Cards -->
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Action Required Equipment</h3>
+                    </div>
+                    <div class="card-body" id="actionEquipment">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Warning Equipment</h3>
+                    </div>
+                    <div class="card-body" id="warningEquipment">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recently Serviced</h3>
+                    </div>
+                    <div class="card-body" id="recentlyServiced">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Maintenance Tab -->
+        <div id="maintenance" class="tab-content">
+            <h2>Equipment Maintenance Schedule</h2>
+            
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search equipment..." onkeyup="searchTable()">
+                </div>
+                <div class="filter-group">
+                    <select id="statusFilter" onchange="filterTable()">
+                        <option value="">All Status</option>
+                        <option value="ok">OK</option>
+                        <option value="warning">Warning</option>
+                        <option value="action">Action Required</option>
+                    </select>
+                    <select id="equipmentFilter" onchange="filterTable()">
+                        <option value="">All Equipment</option>
+                        <option value="Tipper">Tippers</option>
+                        <option value="Excavator">Excavators</option>
+                        <option value="Loader">Loaders</option>
+                    </select>
+                    <button onclick="exportToExcel()">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="maintenanceTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Equipment ID</th>
+                            <th rowspan="2">Type</th>
+                            <th rowspan="2">Current HMR</th>
+                            <th colspan="5" class="service-header">500 hr Service</th>
+                            <th colspan="5" class="service-header">1000 hr Service</th>
+                            <th colspan="5" class="service-header">2000 hr Service</th>
+                            <th rowspan="2">Actions</th>
+                        </tr>
+                        <tr>
+                            <!-- 500 hr sub-headers -->
+                            <th class="service-header">Previous</th>
+                            <th class="service-header">Last Date</th>
+                            <th class="service-header">Next Due</th>
+                            <th class="service-header">HMR Left</th>
+                            <th class="service-header">Status</th>
+                            <!-- 1000 hr sub-headers -->
+                            <th class="service-header">Previous</th>
+                            <th class="service-header">Last Date</th>
+                            <th class="service-header">Next Due</th>
+                            <th class="service-header">HMR Left</th>
+                            <th class="service-header">Status</th>
+                            <!-- 2000 hr sub-headers -->
+                            <th class="service-header">Previous</th>
+                            <th class="service-header">Last Date</th>
+                            <th class="service-header">Next Due</th>
+                            <th class="service-header">HMR Left</th>
+                            <th class="service-header">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample Data for Tippers -->
+                        <tr>
+                            <td>AP39UQ0097</td>
+                            <td>Tipper</td>
+                            <td>5145</td>
+                            <!-- 500 hr data -->
+                            <td>5106</td>
+                            <td>2024-05-15</td>
+                            <td>5606</td>
+                            <td>461</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 1000 hr data -->
+                            <td>5146</td>
+                            <td>2024-04-10</td>
+                            <td>6146</td>
+                            <td>1001</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 2000 hr data -->
+                            <td>4105</td>
+                            <td>2024-03-01</td>
+                            <td>6105</td>
+                            <td>960</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <td>
+                                <button class="secondary" onclick="updateHmr('AP39UQ0097')">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>AP39UQ0095</td>
+                            <td>Tipper</td>
+                            <td>3527</td>
+                            <!-- 500 hr data -->
+                            <td>3097</td>
+                            <td>2024-06-01</td>
+                            <td>3597</td>
+                            <td>70</td>
+                            <td><span class="status-badge status-action-badge">Mail Sent</span></td>
+                            <!-- 1000 hr data -->
+                            <td>3095</td>
+                            <td>2024-05-20</td>
+                            <td>4095</td>
+                            <td>568</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 2000 hr data -->
+                            <td>2152</td>
+                            <td>2024-02-15</td>
+                            <td>4152</td>
+                            <td>625</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <td>
+                                <button class="secondary" onclick="updateHmr('AP39UQ0095')">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- Sample Data for Excavators/Loaders -->
+                        <tr>
+                            <td>AP39OQ9026</td>
+                            <td>Loader</td>
+                            <td>2944</td>
+                            <!-- 500 hr data -->
+                            <td>2569</td>
+                            <td>2024-05-25</td>
+                            <td>3069</td>
+                            <td>125</td>
+                            <td><span class="status-badge status-warning-badge">Warning</span></td>
+                            <!-- 1000 hr data -->
+                            <td>2088</td>
+                            <td>2024-04-05</td>
+                            <td>3088</td>
+                            <td>144</td>
+                            <td><span class="status-badge status-warning-badge">Warning</span></td>
+                            <!-- 2000 hr data -->
+                            <td>2132</td>
+                            <td>2024-01-10</td>
+                            <td>4132</td>
+                            <td>1188</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <td>
+                                <button class="secondary" onclick="updateHmr('AP39OQ9026')">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>312126</td>
+                            <td>Excavator</td>
+                            <td>1849</td>
+                            <!-- 500 hr data -->
+                            <td>1530</td>
+                            <td>2024-06-05</td>
+                            <td>2030</td>
+                            <td>181</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 1000 hr data -->
+                            <td>1011</td>
+                            <td>2024-05-10</td>
+                            <td>2011</td>
+                            <td>162</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <!-- 2000 hr data -->
+                            <td>0</td>
+                            <td>-</td>
+                            <td>2000</td>
+                            <td>151</td>
+                            <td><span class="status-badge status-ok-badge">OK</span></td>
+                            <td>
+                                <button class="secondary" onclick="updateHmr('312126')">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Add Equipment Tab -->
+        <div id="add-equipment" class="tab-content">
+            <h2>Add New Equipment</h2>
+            
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="equipmentId">Equipment ID</label>
+                    <input type="text" id="equipmentId" placeholder="Enter equipment ID">
+                </div>
+                
+                <div class="form-group">
+                    <label for="equipmentType">Equipment Type</label>
+                    <select id="equipmentType">
+                        <option value="">Select Type</option>
+                        <option value="Tipper">Tipper</option>
+                        <option value="Excavator">Excavator</option>
+                        <option value="Loader">Loader</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentHmr">Current HMR</label>
+                    <input type="number" id="currentHmr" placeholder="Enter current HMR">
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastServiceDate">Last Service Date</label>
+                    <input type="date" id="lastServiceDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastServiceHmr">Last Service HMR</label>
+                    <input type="number" id="lastServiceHmr" placeholder="Enter HMR at last service">
+                </div>
+                
+                <div class="form-actions">
+                    <button class="secondary" onclick="showTab('maintenance')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button onclick="addNewEquipment()">
+                        <i class="fas fa-plus"></i> Add Equipment
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Last Updated: <span id="lastUpdated">2025-08-11 16:11:00</span></p>
+            <p>© 2025 Equipment Management System</p>
+        </div>
+    </div>
 
- <!-- Maintenance Page (initially hidden) -->
- <div id="maintenancePage" class="container" style="display: none;">
- <a href="#" class="back-btn" onclick="showHomePage()">← Back to Home</a>
- <h1>Equipment Maintenance Tracker</h1>
- <div class="controls">
- <div class="search-box">
- <input type="text" id="searchInput" placeholder="Search equipment..." onkeyup="searchTable()">
- </div>
- <div class="filter-group">
- <select id="statusFilter" onchange="filterTable()">
- <option value="">All Status</option>
- <option value="ok">OK</option>
- <option value="warning">Warning</option>
- <option value="action">Action Required</option>
- </select>
- <select id="equipmentFilter" onchange="filterTable()">
- <option value="">All Equipment</option>
- <option value="Tipper">Tippers</option>
- <option value="Excavator">Excavators</option>
- <option value="Loader">Loaders</option>
- </select>
- <button onclick="exportToExcel()">Export to Excel</button>
- <button onclick="showAddEquipmentPage()">Add Equipment</button>
- </div>
- </div>
- <table id="maintenanceTable">
- <thead>
- <tr>
- <th rowspan="2">Equipment ID</th>
- <th rowspan="2">Type</th>
- <th rowspan="2">Current HMR</th>
- <th colspan="5" class="service-header">500 hr Service</th>
- <th colspan="5" class="service-header">1000 hr Service</th>
- <th colspan="5" class="service-header">2000 hr Service</th>
- <th rowspan="2">Actions</th>
- </tr>
- <tr>
- <!-- 500 hr sub-headers -->
- <th class="service-header">Previous</th>
- <th class="service-header">Last Date</th>
- <th class="service-header">Next Due</th>
- <th class="service-header">HMR Left</th>
- <th class="service-header">Status</th>
- <!-- 1000 hr sub-headers -->
- <th class="service-header">Previous</th>
- <th class="service-header">Last Date</th>
- <th class="service-header">Next Due</th>
- <th class="service-header">HMR Left</th>
- <th class="service-header">Status</th>
- <!-- 2000 hr sub-headers -->
- <th class="service-header">Previous</th>
- <th class="service-header">Last Date</th>
- <th class="service-header">Next Due</th>
- <th class="service-header">HMR Left</th>
- <th class="service-header">Status</th>
- </tr>
- </thead>
- <tbody id="equipmentTableBody">
- <!-- Equipment data will be populated here -->
- </tbody>
- </table>
- <div class="footer">
- <p>Last Updated: <span id="lastUpdated">2025-08-11 16:11:00</span></p>
- <p>© 2025 Equipment Management System</p>
- </div>
- </div>
-
- <!-- Add Equipment Page -->
- <div id="addEquipmentPage" class="container" style="display: none;">
- <a href="#" class="back-btn" onclick="showMaintenancePage()">← Back to Maintenance</a>
- <h1>Add New Equipment</h1>
- <div class="form-container">
- <form id="equipmentForm">
- <div class="form-group">
- <label for="equipmentId">Equipment ID</label>
- <input type="text" id="equipmentId" required>
- </div>
- <div class="form-group">
- <label for="equipmentType">Equipment Type</label>
- <select id="equipmentType" required>
- <option value="Tipper">Tipper</option>
- <option value="Excavator">Excavator</option>
- <option value="Loader">Loader</option>
- </select>
- </div>
- <div class="form-group">
- <label for="currentHmr">Current HMR</label>
- <input type="number" id="currentHmr" required>
- </div>
-
- <div class="form-section">
- <h3>500 Hour Service Details</h3>
- <div class="form-group">
- <label for="service500Previous">Previous Service HMR</label>
- <input type="number" id="service500Previous">
- </div>
- <div class="form-group">
- <label for="service500LastDate">Last Service Date</label>
- <input type="date" id="service500LastDate">
- </div>
- </div>
-
- <div class="form-section">
- <h3>1000 Hour Service Details</h3>
- <div class="form-group">
- <label for="service1000Previous">Previous Service HMR</label>
- <input type="number" id="service1000Previous">
- </div>
- <div class="form-group">
- <label for="service1000LastDate">Last Service Date</label>
- <input type="date" id="service1000LastDate">
- </div>
- </div>
-
- <div class="form-section">
- <h3>2000 Hour Service Details</h3>
- <div class="form-group">
- <label for="service2000Previous">Previous Service HMR</label>
- <input type="number" id="service2000Previous">
- </div>
- <div class="form-group">
- <label for="service2000LastDate">Last Service Date</label>
- <input type="date" id="service2000LastDate">
- </div>
- </div>
-
- <div class="form-actions">
- <button type="button" class="btn-secondary" onclick="showMaintenancePage()">Cancel</button>
- <button type="submit">Save Equipment</button>
- </div>
- </form>
- </div>
- </div>
-
- <!-- Edit Equipment Modal -->
- <div id="editModal" class="modal">
- <div class="modal-content">
- <div class="modal-header">
- <h2>Edit Equipment</h2>
- <span class="close" onclick="closeEditModal()">&times;</span>
- </div>
- <form id="editForm">
- <input type="hidden" id="editEquipmentId">
- <div class="form-group">
- <label for="editCurrentHmr">Current HMR</label>
- <input type="number" id="editCurrentHmr" required>
- </div>
- <div class="form-group">
- <label for="editService500Previous">500hr Service Previous HMR</label>
- <input type="number" id="editService500Previous">
- </div>
- <div class="form-group">
- <label for="editService500LastDate">500hr Service Last Date</label>
- <input type="date" id="editService500LastDate">
- </div>
- <div class="form-group">
- <label for="editService1000Previous">1000hr Service Previous HMR</label>
- <input type="number" id="editService1000Previous">
- </div>
- <div class="form-group">
- <label for="editService1000LastDate">1000hr Service Last Date</label>
- <input type="date" id="editService1000LastDate">
- </div>
- <div class="form-group">
- <label for="editService2000Previous">2000hr Service Previous HMR</label>
- <input type="number" id="editService2000Previous">
- </div>
- <div class="form-group">
- <label for="editService2000LastDate">2000hr Service Last Date</label>
- <input type="date" id="editService2000LastDate">
- </div>
- <div class="form-actions">
- <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
- <button type="submit">Save Changes</button>
- </div>
- </form>
- </div>
- </div>
-
- <!-- Floating action button -->
- <div id="floatingBtn" class="floating-btn" onclick="showHomePage()" style="display: none;">
- <i class="fas fa-home"></i>
- </div>
-
- <!-- Font Awesome for icons -->
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
- <script>
- // Equipment data structure
- let equipmentData = [];
-
- // Initialize with sample data
- function initializeSampleData() {
- equipmentData = [
- {
- id: "AP39UQ0095",
- type: "Tipper",
- currentHmr: 5145,
- service500: { previous: 5106, lastDate: "2024-05-15", nextDue: 5606, hmrLeft: 461, status: "ok" },
- service1000: { previous: 5146, lastDate: "2024-04-10", nextDue: 6146, hmrLeft: 1001, status: "ok" },
- service2000: { previous: 4105, lastDate: "2024-03-01", nextDue: 6105, hmrLeft: 960, status: "ok" }
- },
- {
- id: "AP39UQ0097",
- type: "Tipper",
- currentHmr: 3527,
- service500: { previous: 3097, lastDate: "2024-06-01", nextDue: 3597, hmrLeft: 70, status: "action" },
- service1000: { previous: 3095, lastDate: "2024-05-20", nextDue: 4095, hmrLeft: 568, status: "ok" },
- service2000: { previous: 2152, lastDate: "2024-02-15", nextDue: 4152, hmrLeft: 625, status: "ok" }
- },
- {
- id: "AP39OQ9026",
- type: "Loader",
- currentHmr: 2944,
- service500: { previous: 2569, lastDate: "2024-05-25", nextDue: 3069, hmrLeft: 125, status: "warning" },
- service1000: { previous: 2088, lastDate: "2024-04-05", nextDue: 3088, hmrLeft: 144, status: "warning" },
- service2000: { previous: 2132, lastDate: "2024-01-10", nextDue: 4132, hmrLeft: 1188, status: "ok" }
- },
- {
- id: "EC210D-312126",
- type: "Excavator",
- currentHmr: 1849,
- service500: { previous: 1530, lastDate: "2024-06-05", nextDue: 2030, hmrLeft: 181, status: "ok" },
- service1000: { previous: 1011, lastDate: "2024-05-10", nextDue: 2011, hmrLeft: 162, status: "ok" },
- service2000: { previous: 0, lastDate: "-", nextDue: 2000, hmrLeft: 151, status: "ok" }
- }
- ];
-
- // Add 8 more tippers with sample data
- for (let i = 1; i <= 8; i++) {
- equipmentData.push({
- id: `AP39UQ0${100 + i}`,
- type: "Tipper",
- currentHmr: 2500 + (i * 200),
- service500: { 
- previous: 2400 + (i * 200), 
- lastDate: `2024-0${5 + (i % 3)}-${10 + (i % 20)}`, 
- nextDue: 2900 + (i * 200), 
- hmrLeft: 400 - (i * 20), 
- status: (400 - (i * 20)) < 100 ? "warning" : "ok" 
- },
- service1000: { 
- previous: 1900 + (i * 200), 
- lastDate: `2024-0${4 + (i % 2)}-${15 + (i % 15)}`, 
- nextDue: 2900 + (i * 200), 
- hmrLeft: 400 - (i * 15), 
- status: (400 - (i * 15)) < 150 ? "warning" : "ok" 
- },
- service2000: { 
- previous: 1000 + (i * 200), 
- lastDate: `2024-0${2 + (i % 2)}-${5 + (i % 25)}`, 
- nextDue: 3000 + (i * 200), 
- hmrLeft: 500 - (i * 25), 
- status: "ok" 
- }
- });
- }
- }
-
- // Page navigation functions
- function showMaintenancePage() {
- document.getElementById('homePage').style.display = 'none';
- document.getElementById('maintenancePage').style.display = 'block';
- document.getElementById('addEquipmentPage').style.display = 'none';
- document.getElementById('floatingBtn').style.display = 'flex';
- populateEquipmentTable();
- filterTable();
- }
-
- function showHomePage() {
- document.getElementById('homePage').style.display = 'block';
- document.getElementById('maintenancePage').style.display = 'none';
- document.getElementById('addEquipmentPage').style.display = 'none';
- document.getElementById('floatingBtn').style.display = 'none';
- updateHomePage();
- }
-
- function showAddEquipmentPage() {
- document.getElementById('homePage').style.display = 'none';
- document.getElementById('maintenancePage').style.display = 'none';
- document.getElementById('addEquipmentPage').style.display = 'block';
- document.getElementById('floatingBtn').style.display = 'flex';
- }
-
- // Update homepage with Mail Sent and Warning Equipment
- function updateHomePage() {
- const mailSentTippers = document.getElementById("mailSentTippers");
- const warningTippers = document.getElementById("warningTippers");
- mailSentTippers.innerHTML = "";
- warningTippers.innerHTML = "";
-
- let mailSentCount = 0;
- let warningCount = 0;
-
- equipmentData.forEach(equipment => {
- if (equipment.type !== "Tipper") return;
-
- const status500 = equipment.service500.status;
- const status1000 = equipment.service1000.status;
- const status2000 = equipment.service2000.status;
-
- if (status500 === "action" || status1000 === "action" || status2000 === "action") {
- const btn = document.createElement("a");
- btn.className = "status-btn mail-sent-btn";
- btn.textContent = `Mail Sent: ${equipment.id}`;
- mailSentTippers.appendChild(btn);
- mailSentCount++;
- }
-
- if (status500 === "warning" || status1000 === "warning" || status2000 === "warning") {
- const btn = document.createElement("a");
- btn.className = "status-btn warning-btn";
- btn.textContent = `Warning: ${equipment.id}`;
- warningTippers.appendChild(btn);
- warningCount++;
- }
- });
-
- if (mailSentCount === 0) {
- const p = document.createElement("p");
- p.className = "equipment-item";
- p.textContent = "No Equipment with Mail Sent status";
- mailSentTippers.appendChild(p);
- }
-
- if (warningCount === 0) {
- const p = document.createElement("p");
- p.className = "equipment-item";
- p.textContent = "No Equipment with Warning status";
- warningTippers.appendChild(p);
- }
- }
-
- // Populate equipment table
- function populateEquipmentTable() {
- const tableBody = document.getElementById("equipmentTableBody");
- tableBody.innerHTML = "";
-
- equipmentData.forEach(equipment => {
- const row = document.createElement("tr");
- 
- // Basic info
- row.innerHTML = `
- <td>${equipment.id}</td>
- <td>${equipment.type}</td>
- <td>${equipment.currentHmr}</td>
- 
- <!-- 500 hr service -->
- <td>${equipment.service500.previous}</td>
- <td>${equipment.service500.lastDate}</td>
- <td>${equipment.service500.nextDue}</td>
- <td>${equipment.service500.hmrLeft}</td>
- <td>${getStatusBadge(equipment.service500.status)}</td>
- 
- <!-- 1000 hr service -->
- <td>${equipment.service1000.previous}</td>
- <td>${equipment.service1000.lastDate}</td>
- <td>${equipment.service1000.nextDue}</td>
- <td>${equipment.service1000.hmrLeft}</td>
- <td>${getStatusBadge(equipment.service1000.status)}</td>
- 
- <!-- 2000 hr service -->
- <td>${equipment.service2000.previous}</td>
- <td>${equipment.service2000.lastDate}</td>
- <td>${equipment.service2000.nextDue}</td>
- <td>${equipment.service2000.hmrLeft}</td>
- <td>${getStatusBadge(equipment.service2000.status)}</td>
- 
- <!-- Actions -->
- <td>
- <button onclick="editEquipment('${equipment.id}')">Edit</button>
- <button class="btn-danger" onclick="deleteEquipment('${equipment.id}')">Delete</button>
- </td>
- `;
-
- tableBody.appendChild(row);
- });
- }
-
- function getStatusBadge(status) {
- switch(status) {
- case "ok": return '<span class="status-ok">OK</span>';
- case "warning": return '<span class="status-warning">Warning</span>';
- case "action": return '<span class="status-action">Mail Sent</span>';
- default: return status;
- }
- }
-
- // Table functions
- function searchTable() {
- const input = document.getElementById("searchInput");
- const filter = input.value.toUpperCase();
- const table = document.getElementById("maintenanceTable");
- const tr = table.getElementsByTagName("tr");
- 
- for (let i = 2; i < tr.length; i++) {
- let found = false;
- const td = tr[i].getElementsByTagName("td");
- for (let j = 0; j < td.length; j++) {
- if (td[j]) {
- const txtValue = td[j].textContent || td[j].innerText;
- if (txtValue.toUpperCase().indexOf(filter) > -1) {
- found = true;
- break;
- }
- }
- }
- tr[i].style.display = found ? "" : "none";
- }
- }
-
- function filterTable() {
- const statusFilter = document.getElementById("statusFilter").value;
- const equipmentFilter = document.getElementById("equipmentFilter").value;
- const table = document.getElementById("maintenanceTable");
- const tr = table.getElementsByTagName("tr");
-
- for (let i = 2; i < tr.length; i++) {
- const statusCells = [
- tr[i].cells[7], // 500hr status
- tr[i].cells[12], // 1000hr status
- tr[i].cells[17] // 2000hr status
- ];
- const equipmentType = tr[i].cells[1].textContent;
- let statusMatch = false;
- let equipmentMatch = equipmentFilter === "" || equipmentType === equipmentFilter;
- 
- if (statusFilter === "") {
- statusMatch = true;
- } else {
- for (const cell of statusCells) {
- if (cell.textContent.toLowerCase().includes(statusFilter)) {
- statusMatch = true;
- break;
- }
- }
- }
- 
- tr[i].style.display = (statusMatch && equipmentMatch) ? "" : "none";
- }
- }
-
- function exportToExcel() {
- alert("Exporting data to Excel...");
- // In a real implementation, this would generate and download an Excel file
- }
-
- // Equipment form handling
- document.getElementById('equipmentForm').addEventListener('submit', function(e) {
- e.preventDefault();
- 
- const newEquipment = {
- id: document.getElementById('equipmentId').value,
- type: document.getElementById('equipmentType').value,
- currentHmr: parseInt(document.getElementById('currentHmr').value),
- service500: {
- previous: parseInt(document.getElementById('service500Previous').value) || 0,
- lastDate: document.getElementById('service500LastDate').value || "-",
- nextDue: (parseInt(document.getElementById('service500Previous').value) || 0) + 500,
- hmrLeft: (parseInt(document.getElementById('service500Previous').value) || 0) + 500 - parseInt(document.getElementById('currentHmr').value),
- status: calculateStatus((parseInt(document.getElementById('service500Previous').value) || 0) + 500 - parseInt(document.getElementById('currentHmr').value))
- },
- service1000: {
- previous: parseInt(document.getElementById('service1000Previous').value) || 0,
- lastDate: document.getElementById('service1000LastDate').value || "-",
- nextDue: (parseInt(document.getElementById('service1000Previous').value) || 0) + 1000,
- hmrLeft: (parseInt(document.getElementById('service1000Previous').value) || 0) + 1000 - parseInt(document.getElementById('currentHmr').value),
- status: calculateStatus((parseInt(document.getElementById('service1000Previous').value) || 0) + 1000 - parseInt(document.getElementById('currentHmr').value))
- },
- service2000: {
- previous: parseInt(document.getElementById('service2000Previous').value) || 0,
- lastDate: document.getElementById('service2000LastDate').value || "-",
- nextDue: (parseInt(document.getElementById('service2000Previous').value) || 0) + 2000,
- hmrLeft: (parseInt(document.getElementById('service2000Previous').value) || 0) + 2000 - parseInt(document.getElementById('currentHmr').value),
- status: calculateStatus((parseInt(document.getElementById('service2000Previous').value) || 0) + 2000 - parseInt(document.getElementById('currentHmr').value))
- }
- };
- 
- equipmentData.push(newEquipment);
- populateEquipmentTable();
- showMaintenancePage();
- });
-
- function calculateStatus(hmrLeft) {
- if (hmrLeft <= 50) return "action";
- if (hmrLeft <= 150) return "warning";
- return "ok";
- }
-
- // Edit equipment functionality
- function editEquipment(id) {
- const equipment = equipmentData.find(e => e.id === id);
- if (!equipment) return;
-
- document.getElementById('editEquipmentId').value = equipment.id;
- document.getElementById('editCurrentHmr').value = equipment.currentHmr;
- document.getElementById('editService500Previous').value = equipment.service500.previous;
- document.getElementById('editService500LastDate').value = equipment.service500.lastDate;
- document.getElementById('editService1000Previous').value = equipment.service1000.previous;
- document.getElementById('editService1000LastDate').value = equipment.service1000.lastDate;
- document.getElementById('editService2000Previous').value = equipment.service2000.previous;
- document.getElementById('editService2000LastDate').value = equipment.service2000.lastDate;
-
- document.getElementById('editModal').style.display = 'flex';
- }
-
- function closeEditModal() {
- document.getElementById('editModal').style.display = 'none';
- }
-
- document.getElementById('editForm').addEventListener('submit', function(e) {
- e.preventDefault();
- 
- const id = document.getElementById('editEquipmentId').value;
- const currentHmr = parseInt(document.getElementById('editCurrentHmr').value);
- const service500Previous = parseInt(document.getElementById('editService500Previous').value) || 0;
- const service500LastDate = document.getElementById('editService500LastDate').value;
- const service1000Previous = parseInt(document.getElementById('editService1000Previous').value) || 0;
- const service1000LastDate = document.getElementById('editService1000LastDate').value;
- const service2000Previous = parseInt(document.getElementById('editService2000Previous').value) || 0;
- const service2000LastDate = document.getElementById('editService2000LastDate').value;
-
- const equipmentIndex = equipmentData.findIndex(e => e.id === id);
- if (equipmentIndex !== -1) {
- equipmentData[equipmentIndex].currentHmr = currentHmr;
- equipmentData[equipmentIndex].service500.previous = service500Previous;
- equipmentData[equipmentIndex].service500.lastDate = service500LastDate;
- equipmentData[equipmentIndex].service500.nextDue = service500Previous + 500;
- equipmentData[equipmentIndex].service500.hmrLeft = service500Previous + 500 - currentHmr;
- equipmentData[equipmentIndex].service500.status = calculateStatus(service500Previous + 500 - currentHmr);
-
- equipmentData[equipmentIndex].service1000.previous = service1000Previous;
- equipmentData[equipmentIndex].service1000.lastDate = service1000LastDate;
- equipmentData[equipmentIndex].service1000.nextDue = service1000Previous + 1000;
- equipmentData[equipmentIndex].service1000.hmrLeft = service1000Previous + 1000 - currentHmr;
- equipmentData[equipmentIndex].service1000.status = calculateStatus(service1000Previous + 1000 - currentHmr);
-
- equipmentData[equipmentIndex].service2000.previous = service2000Previous;
- equipmentData[equipmentIndex].service2000.lastDate = service2000LastDate;
- equipmentData[equipmentIndex].service2000.nextDue = service2000Previous + 2000;
- equipmentData[equipmentIndex].service2000.hmrLeft = service2000Previous + 2000 - currentHmr;
- equipmentData[equipmentIndex].service2000.status = calculateStatus(service2000Previous + 2000 - currentHmr);
-
- populateEquipmentTable();
- closeEditModal();
- }
- });
-
- function deleteEquipment(id) {
- if (confirm(`Are you sure you want to delete equipment ${id}?`)) {
- equipmentData = equipmentData.filter(e => e.id !== id);
- populateEquipmentTable();
- updateHomePage();
- }
- }
-
- // Initialize the page
- document.addEventListener('DOMContentLoaded', function() {
- initializeSampleData();
- showHomePage();
- });
- </script>
+    <script>
+        // Tab navigation
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelector(`.nav-tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Refresh data if needed
+            if (tabId === 'dashboard') {
+                updateDashboard();
+            } else if (tabId === 'maintenance') {
+                filterTable();
+            }
+        }
+        
+        // Initialize tab functionality
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                showTab(tab.getAttribute('data-tab'));
+            });
+        });
+        
+        // Update dashboard with summary data
+        function updateDashboard() {
+            const table = document.getElementById("maintenanceTable");
+            const rows = table.getElementsByTagName("tr");
+            
+            let totalEquipment = 0;
+            let okStatus = 0;
+            let warningStatus = 0;
+            let actionStatus = 0;
+            
+            const actionEquipment = document.getElementById("actionEquipment");
+            const warningEquipment = document.getElementById("warningEquipment");
+            const recentlyServiced = document.getElementById("recentlyServiced");
+            
+            actionEquipment.innerHTML = "";
+            warningEquipment.innerHTML = "";
+            recentlyServiced.innerHTML = "";
+            
+            // Skip header rows
+            for (let i = 2; i < rows.length; i++) {
+                const cells = rows[i].cells;
+                if (cells.length === 0) continue;
+                
+                totalEquipment++;
+                
+                const equipmentId = cells[0].textContent;
+                const equipmentType = cells[1].textContent;
+                const currentHmr = cells[2].textContent;
+                
+                // Check status cells
+                const statusCells = [
+                    cells[7],  // 500hr status
+                    cells[12], // 1000hr status
+                    cells[17]  // 2000hr status
+                ];
+                
+                let hasWarning = false;
+                let hasAction = false;
+                
+                for (const cell of statusCells) {
+                    const status = cell.textContent.toLowerCase();
+                    if (status.includes("mail sent")) {
+                        hasAction = true;
+                    } else if (status.includes("warning")) {
+                        hasWarning = true;
+                    }
+                }
+                
+                if (hasAction) {
+                    actionStatus++;
+                    const item = document.createElement("div");
+                    item.className = "status-item status-action";
+                    item.innerHTML = `
+                        <div>${equipmentId} (${equipmentType})</div>
+                        <div>${currentHmr} HMR</div>
+                    `;
+                    actionEquipment.appendChild(item);
+                } else if (hasWarning) {
+                    warningStatus++;
+                    const item = document.createElement("div");
+                    item.className = "status-item status-warning";
+                    item.innerHTML = `
+                        <div>${equipmentId} (${equipmentType})</div>
+                        <div>${currentHmr} HMR</div>
+                    `;
+                    warningEquipment.appendChild(item);
+                } else {
+                    okStatus++;
+                }
+                
+                // Add to recently serviced (mock data for demo)
+                if (i % 2 === 0) {
+                    const item = document.createElement("div");
+                    item.className = "status-item status-ok";
+                    item.innerHTML = `
+                        <div>${equipmentId} (${equipmentType})</div>
+                        <div>Serviced: 2024-07-15</div>
+                    `;
+                    recentlyServiced.appendChild(item);
+                }
+            }
+            
+            // Update summary cards
+            document.getElementById("totalEquipment").textContent = totalEquipment;
+            document.getElementById("okStatus").textContent = okStatus;
+            document.getElementById("warningStatus").textContent = warningStatus;
+            document.getElementById("actionStatus").textContent = actionStatus;
+            
+            // Add placeholder messages if no equipment in a category
+            if (actionEquipment.children.length === 0) {
+                actionEquipment.innerHTML = "<p>No equipment requires immediate action</p>";
+            }
+            
+            if (warningEquipment.children.length === 0) {
+                warningEquipment.innerHTML = "<p>No equipment with warning status</p>";
+            }
+            
+            if (recentlyServiced.children.length === 0) {
+                recentlyServiced.innerHTML = "<p>No recent service records</p>";
+            }
+        }
+        
+        // Table functions
+        function searchTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById("maintenanceTable");
+            const tr = table.getElementsByTagName("tr");
+            
+            for (let i = 2; i < tr.length; i++) {
+                let found = false;
+                const td = tr[i].getElementsByTagName("td");
+                
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+        
+        function filterTable() {
+            const statusFilter = document.getElementById("statusFilter").value;
+            const equipmentFilter = document.getElementById("equipmentFilter").value;
+            const table = document.getElementById("maintenanceTable");
+            const tr = table.getElementsByTagName("tr");
+            
+            for (let i = 2; i < tr.length; i++) {
+                const statusCells = [
+                    tr[i].cells[7],  // 500hr status
+                    tr[i].cells[12], // 1000hr status
+                    tr[i].cells[17]  // 2000hr status
+                ];
+                
+                const equipmentType = tr[i].cells[1].textContent;
+                let statusMatch = false;
+                let equipmentMatch = equipmentFilter === "" || equipmentType === equipmentFilter;
+                
+                if (statusFilter === "") {
+                    statusMatch = true;
+                } else {
+                    for (const cell of statusCells) {
+                        if (cell.textContent.toLowerCase().includes(statusFilter)) {
+                            statusMatch = true;
+                            break;
+                        }
+                    }
+                }
+                
+                tr[i].style.display = (statusMatch && equipmentMatch) ? "" : "none";
+            }
+        }
+        
+        function exportToExcel() {
+            alert("Exporting data to Excel...");
+            // In a real application, this would generate and download an Excel file
+        }
+        
+        function updateHmr(equipmentId) {
+            const newHmr = prompt(`Enter new HMR value for ${equipmentId}:`);
+            if (newHmr && !isNaN(newHmr)) {
+                alert(`HMR updated to ${newHmr} for ${equipmentId}`);
+                // In a real application, this would update the database
+            }
+        }
+        
+        function addNewEquipment() {
+            const equipmentId = document.getElementById("equipmentId").value;
+            const equipmentType = document.getElementById("equipmentType").value;
+            const currentHmr = document.getElementById("currentHmr").value;
+            const lastServiceDate = document.getElementById("lastServiceDate").value;
+            const lastServiceHmr = document.getElementById("lastServiceHmr").value;
+            
+            if (!equipmentId || !equipmentType || !currentHmr) {
+                alert("Please fill in all required fields");
+                return;
+            }
+            
+            alert(`Adding new equipment: ${equipmentId} (${equipmentType})`);
+            // In a real application, this would add the equipment to the database
+            
+            // Clear the form
+            document.getElementById("equipmentId").value = "";
+            document.getElementById("equipmentType").value = "";
+            document.getElementById("currentHmr").value = "";
+            document.getElementById("lastServiceDate").value = "";
+            document.getElementById("lastServiceHmr").value = "";
+            
+            // Switch to maintenance tab
+            showTab('maintenance');
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            
+            // Set current date and time
+            const now = new Date();
+            document.getElementById("lastUpdated").textContent = now.toLocaleString();
+        });
+    </script>
 </body>
 </html>
